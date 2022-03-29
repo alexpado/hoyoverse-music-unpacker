@@ -1,0 +1,32 @@
+plugins {
+    id 'java'
+}
+
+group 'ovh.akio'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "ovh.akio.genshin.Application"
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+    implementation group: 'info.picocli', name: 'picocli', version: '4.6.3'
+    implementation group: 'me.tongfei', name: 'progressbar', version: '0.9.3'
+}
+
+test {
+    useJUnitPlatform()
+}
