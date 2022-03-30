@@ -268,7 +268,7 @@ public class Application implements Callable<Integer> {
     private <T extends AudioFile> void runConvert(String name, File root, AudioConverter<T> converter, List<T> files) {
 
         AtomicInteger   counter = new AtomicInteger(0);
-        ExecutorService pool    = Executors.newFixedThreadPool(4);
+        ExecutorService pool    = Executors.newFixedThreadPool(Math.max(this.threadCount, 1));
         List<Runnable>  tasks   = new ArrayList<>();
 
         try (ProgressBar p = Utils.defaultProgressBar(name, files.size())) {
