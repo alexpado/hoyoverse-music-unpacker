@@ -14,8 +14,8 @@ wanted to work on my own version for the challenge and to add few features.
 
 ## Ok, but still, why ?
 
-Since 2.5, Mihoyo decided to change the way update are downloaded. Instead of downloading a whole package with all
-updated PCK files, they work with `hdiff` files which only update part of the current game files.
+Since 2.5, ~~Mihoyo~~ Hoyoverse decided to change the way update are downloaded. Instead of downloading a whole package
+with all updated PCK files, they work with `hdiff` files which only update part of the current game files.
 
 This is cleaner, smarter and reduces a lot the download size.
 
@@ -50,14 +50,14 @@ If you want to extract music from the current version of the game:
 java -jar <whateverTheName>.jar --genshin="D:\Program Files\Genshin Impact"
 ```
 
-If you want to extract music from the update package (once the download though the launcher is finished):
+If you want to extract music from the update package (once the download through the launcher is finished):
 
 ```bash
 java -jar <whateverTheName>.jar --genshin="D:\Program Files\Genshin Impact" --diff
 ```
 
 The previous command will leave a lot of file, both created and updated... If you want to know which one has been
-create/update, add the `--prefix` flag:
+created/updated, add the `--prefix` flag:
 
 ```
 java -jar <whateverTheName>.jar --genshin="D:\Program Files\Genshin Impact" --diff --prefix
