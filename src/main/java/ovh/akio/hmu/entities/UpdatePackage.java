@@ -1,4 +1,4 @@
-package ovh.akio.genshin.entities;
+package ovh.akio.hmu.entities;
 
 import java.io.File;
 import java.util.regex.Matcher;
@@ -35,21 +35,21 @@ public class UpdatePackage {
 
     public File getUpdatePackage() {
 
-        return updatePackage;
+        return this.updatePackage;
     }
 
     public String getFromVersion() {
 
-        return fromVersion;
+        return this.fromVersion;
     }
 
     public String getToVersion() {
 
-        return toVersion;
+        return this.toVersion;
     }
 
     public String getSignature() {
 
-        return signature;
+        return this.signature;
     }
 }

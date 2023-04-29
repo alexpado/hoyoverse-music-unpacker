@@ -1,4 +1,4 @@
-package ovh.akio.genshin;
+package ovh.akio.hmu;
 
 import java.io.File;
 

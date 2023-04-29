@@ -1,8 +1,7 @@
-package ovh.akio.genshin.wrappers;
+package ovh.akio.hmu.wrappers;
 
-import ovh.akio.genshin.Application;
-import ovh.akio.genshin.entities.PckAudioFile;
-import ovh.akio.genshin.exceptions.WrapperExecutableNotFound;
+import ovh.akio.hmu.entities.PckAudioFile;
+import ovh.akio.hmu.exceptions.WrapperExecutableNotFound;
 
 import java.io.File;
 
