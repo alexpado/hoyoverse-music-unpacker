@@ -42,6 +42,7 @@ public class HonkaiImpactGame implements HoyoverseGame {
 
         return new File(this.getGameDirectory(), "BH3_Data\\StreamingAssets\\Audio\\GeneratedSoundBanks\\Windows");
     }
+
     @Override
     public UpdatePackage getUpdatePackage() {
 
@@ -52,10 +53,11 @@ public class HonkaiImpactGame implements HoyoverseGame {
     public List<PckAudioFile> getAudioFiles() {
 
         return Utils.getDirectoryContent(this.getAudioDirectory())
-                .stream()
-                .filter(File::isFile)
-                .filter(file -> file.getName().endsWith(".pck"))
-                .map(PckAudioFile::new)
-                .toList();
+                    .stream()
+                    .filter(File::isFile)
+                    .filter(file -> file.getName().endsWith(".pck"))
+                    .filter(file -> file.getName().contains("_Default"))
+                    .map(PckAudioFile::new)
+                    .toList();
     }
 }
