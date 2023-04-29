@@ -7,6 +7,7 @@ inspiration for this.*
 
 - Genshin Impact
 - Honkai Star Rails
+- Honkai Impact (but read more [here](https://github.com/alexpado/hoyoverse-music-unpacker/issues/2) before)
 
 ## Why ?
 
