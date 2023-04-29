@@ -1,18 +1,18 @@
-package ovh.akio.genshin;
+package ovh.akio.hmu;
 
 import me.tongfei.progressbar.ProgressBar;
-import ovh.akio.genshin.entities.PckAudioFile;
-import ovh.akio.genshin.entities.UpdatePackage;
-import ovh.akio.genshin.entities.WemAudioFile;
-import ovh.akio.genshin.exceptions.InvalidGameDirectoryException;
-import ovh.akio.genshin.games.GenshinImpactGame;
-import ovh.akio.genshin.games.HonkaiStarRail;
-import ovh.akio.genshin.games.HoyoverseGame;
-import ovh.akio.genshin.interfaces.AudioConverter;
-import ovh.akio.genshin.interfaces.AudioFile;
-import ovh.akio.genshin.wrappers.HDiffPatchWrapper;
-import ovh.akio.genshin.wrappers.Pck2Wem;
-import ovh.akio.genshin.wrappers.Wem2Wav;
+import ovh.akio.hmu.entities.PckAudioFile;
+import ovh.akio.hmu.entities.UpdatePackage;
+import ovh.akio.hmu.entities.WemAudioFile;
+import ovh.akio.hmu.exceptions.InvalidGameDirectoryException;
+import ovh.akio.hmu.games.GenshinImpactGame;
+import ovh.akio.hmu.games.HonkaiStarRail;
+import ovh.akio.hmu.games.HoyoverseGame;
+import ovh.akio.hmu.interfaces.AudioConverter;
+import ovh.akio.hmu.interfaces.AudioFile;
+import ovh.akio.hmu.wrappers.HDiffPatchWrapper;
+import ovh.akio.hmu.wrappers.Pck2Wem;
+import ovh.akio.hmu.wrappers.Wem2Wav;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -37,7 +37,7 @@ import java.util.zip.ZipInputStream;
 @CommandLine.Command(
         name = "extract",
         mixinStandardHelpOptions = true,
-        version = "Genshin Audio Extractor 1.0"
+        version = "Hoyoverse Audio Extractor 1.1"
 )
 public class Application implements Callable<Integer> {
 

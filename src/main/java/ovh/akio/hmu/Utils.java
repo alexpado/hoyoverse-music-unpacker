@@ -1,9 +1,9 @@
-package ovh.akio.genshin;
+package ovh.akio.hmu;
 
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
-import ovh.akio.genshin.entities.PckAudioFile;
+import ovh.akio.hmu.entities.PckAudioFile;
 
 import java.io.*;
 import java.math.BigInteger;

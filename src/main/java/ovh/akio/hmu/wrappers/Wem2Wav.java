@@ -1,9 +1,8 @@
-package ovh.akio.genshin.wrappers;
+package ovh.akio.hmu.wrappers;
 
-import ovh.akio.genshin.Application;
-import ovh.akio.genshin.entities.WemAudioFile;
-import ovh.akio.genshin.exceptions.WrapperExecutableNotFound;
-import ovh.akio.genshin.interfaces.AudioConverter;
+import ovh.akio.hmu.entities.WemAudioFile;
+import ovh.akio.hmu.exceptions.WrapperExecutableNotFound;
+import ovh.akio.hmu.interfaces.AudioConverter;
 
 import java.io.File;
 

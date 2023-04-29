@@ -1,7 +1,7 @@
-package ovh.akio.genshin.entities;
+package ovh.akio.hmu.entities;
 
-import ovh.akio.genshin.Utils;
-import ovh.akio.genshin.interfaces.AudioFile;
+import ovh.akio.hmu.Utils;
+import ovh.akio.hmu.interfaces.AudioFile;
 
 import java.io.File;
 import java.util.ArrayList;

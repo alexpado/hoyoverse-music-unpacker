@@ -1,7 +1,7 @@
-package ovh.akio.genshin.games;
+package ovh.akio.hmu.games;
 
-import ovh.akio.genshin.entities.PckAudioFile;
-import ovh.akio.genshin.entities.UpdatePackage;
+import ovh.akio.hmu.entities.PckAudioFile;
+import ovh.akio.hmu.entities.UpdatePackage;
 
 import java.io.File;
 import java.util.List;

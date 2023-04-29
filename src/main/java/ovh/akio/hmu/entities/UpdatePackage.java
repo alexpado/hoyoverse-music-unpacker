@@ -1,4 +1,4 @@
-package ovh.akio.genshin.entities;
+package ovh.akio.hmu.entities;
 
 import java.io.File;
 import java.util.regex.Matcher;

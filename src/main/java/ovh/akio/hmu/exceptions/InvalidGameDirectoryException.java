@@ -1,4 +1,4 @@
-package ovh.akio.genshin.exceptions;
+package ovh.akio.hmu.exceptions;
 
 public class InvalidGameDirectoryException extends RuntimeException {
 

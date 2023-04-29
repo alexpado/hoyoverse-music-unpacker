@@ -1,9 +1,9 @@
-package ovh.akio.genshin.games;
+package ovh.akio.hmu.games;
 
-import ovh.akio.genshin.Utils;
-import ovh.akio.genshin.entities.PckAudioFile;
-import ovh.akio.genshin.entities.UpdatePackage;
-import ovh.akio.genshin.exceptions.InvalidGameDirectoryException;
+import ovh.akio.hmu.Utils;
+import ovh.akio.hmu.entities.PckAudioFile;
+import ovh.akio.hmu.entities.UpdatePackage;
+import ovh.akio.hmu.exceptions.InvalidGameDirectoryException;
 
 import java.io.File;
 import java.util.List;
