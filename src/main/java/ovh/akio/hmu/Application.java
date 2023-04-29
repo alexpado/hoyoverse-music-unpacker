@@ -37,7 +37,7 @@ import java.util.zip.ZipInputStream;
 @CommandLine.Command(
         name = "extract",
         mixinStandardHelpOptions = true,
-        version = "Hoyoverse Audio Extractor 1.1"
+        version = "Hoyoverse Audio Extractor 1.2"
 )
 public class Application implements Callable<Integer> {
 
