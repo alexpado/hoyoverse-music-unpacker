@@ -1,10 +1,13 @@
 package ovh.akio.genshin;
 
 import me.tongfei.progressbar.ProgressBar;
-import ovh.akio.genshin.entities.GenshinImpact;
 import ovh.akio.genshin.entities.PckAudioFile;
 import ovh.akio.genshin.entities.UpdatePackage;
 import ovh.akio.genshin.entities.WemAudioFile;
+import ovh.akio.genshin.exceptions.InvalidGameDirectoryException;
+import ovh.akio.genshin.games.GenshinImpactGame;
+import ovh.akio.genshin.games.HonkaiStarRail;
+import ovh.akio.genshin.games.HoyoverseGame;
 import ovh.akio.genshin.interfaces.AudioConverter;
 import ovh.akio.genshin.interfaces.AudioFile;
 import ovh.akio.genshin.wrappers.HDiffPatchWrapper;
@@ -48,11 +51,11 @@ public class Application implements Callable<Integer> {
     private static final File UPDATE_DIFF_SRC     = new File(WORKSPACE, "update\\diff");
 
     @CommandLine.Option(
-            names = {"-g", "--genshin"},
+            names = {"-g", "--game"},
             description = "Installation folder of the game",
             required = true
     )
-    private File genshinFolder;
+    private File gameFolder;
 
     @CommandLine.Option(
             names = {"-d", "--diff"},
@@ -116,21 +119,25 @@ public class Application implements Callable<Integer> {
         AudioConverter<PckAudioFile> unpacker  = new Pck2Wem();
         AudioConverter<WemAudioFile> converter = new Wem2Wav();
 
-        GenshinImpact gi = new GenshinImpact(this.genshinFolder);
+        System.out.println("Detecting game...");
+        HoyoverseGame game = this.getGame();
+        System.out.println("Detected " + game.getName() + " !");
 
-        if (!this.diffMode && gi.getUpdatePackage().isPresent()) {
+        System.out.println("  > Audio Files detected: " + game.getAudioFiles().size());
+
+        if (!this.diffMode && game.getUpdatePackage() != null) {
             System.out.println("An update package has been detected. To run the extraction in diff mode, add the --diff flag.");
         }
 
-        if (this.diffMode && gi.getUpdatePackage().isEmpty()) {
+        if (this.diffMode && game.getUpdatePackage() == null) {
             System.err.println("No update package was detected but the --diff flag was enabled. Please try again without the --diff flag.");
             return 1;
         }
 
-        List<PckAudioFile> pckFiles        = gi.getAudioFiles();
+        List<PckAudioFile> pckFiles        = game.getAudioFiles();
         List<File>         currentWavFiles = this.runExtract(unpacker, converter, pckFiles, EXTRACT_PCK_WEM_OUT, EXTRACT_WEM_WAV_OUT);
 
-        if (this.diffMode && gi.getUpdatePackage().isPresent()) {
+        if (this.diffMode && game.getUpdatePackage() != null) {
 
             UPDATE_PCK_SRC_OUT.mkdirs();
             UPDATE_PCK_WEM_OUT.mkdirs();
@@ -139,7 +146,7 @@ public class Application implements Callable<Integer> {
             UPDATE_DIFF_SRC.mkdirs();
 
             try (ProgressBar p = Utils.defaultProgressBar("Extracting", 1)) {
-                UpdatePackage updatePackage = gi.getUpdatePackage().get();
+                UpdatePackage updatePackage = game.getUpdatePackage();
                 this.extractUpdatePackage(updatePackage);
                 p.setExtraMessage("OK");
                 p.step();
@@ -221,6 +228,24 @@ public class Application implements Callable<Integer> {
         Utils.delete(EXTRACT_PCK_WEM_OUT);
         return 0;
     }
+
+    public HoyoverseGame getGame() {
+
+        // Detect game
+        try {
+            return new GenshinImpactGame(this.gameFolder);
+        } catch (InvalidGameDirectoryException ignore) {
+
+        }
+
+        try {
+            return new HonkaiStarRail(this.gameFolder);
+        } catch (InvalidGameDirectoryException ignore) {}
+
+        throw new IllegalStateException("Could not detect to which game the provided path belongs");
+
+    }
+
 
     private List<File> runExtract(AudioConverter<PckAudioFile> unpacker, AudioConverter<WemAudioFile> converter, List<PckAudioFile> pckFiles, File pckOut, File wemOut) {
 

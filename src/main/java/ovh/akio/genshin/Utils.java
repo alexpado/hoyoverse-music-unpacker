@@ -3,6 +3,7 @@ package ovh.akio.genshin;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
+import ovh.akio.genshin.entities.PckAudioFile;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -69,5 +70,21 @@ public class Utils {
             return Arrays.stream(files).filter(predicate).collect(Collectors.toList());
         }
         return Collections.emptyList();
+    }
+
+    public static List<PckAudioFile> scanPck(File path) {
+
+        if (!path.exists()) {
+            System.err.println("Not an audio output directory: " + path.getAbsolutePath());
+            return Collections.emptyList();
+        }
+
+        return Utils.getDirectoryContent(path)
+                    .stream()
+                    .filter(File::isFile)
+                    .filter(file -> file.getName().endsWith(".pck"))
+                    .filter(file -> file.getName().startsWith("Minimum") || file.getName().startsWith("Music"))
+                    .map(PckAudioFile::new)
+                    .toList();
     }
 }
