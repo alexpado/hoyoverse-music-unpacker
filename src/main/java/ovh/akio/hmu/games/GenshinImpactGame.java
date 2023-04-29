@@ -18,7 +18,9 @@ public class GenshinImpactGame implements HoyoverseGame {
         this.basePath = basePath;
         File gameDirectory = this.getGameDirectory();
 
-        if (!gameDirectory.exists()) {
+        File gameExecutable = new File(gameDirectory, "GenshinImpact.exe");
+
+        if (!gameExecutable.exists()) {
             throw new InvalidGameDirectoryException("The path provided does not point to a valid game directory.");
         }
 

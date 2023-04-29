@@ -8,16 +8,16 @@ import ovh.akio.hmu.exceptions.InvalidGameDirectoryException;
 import java.io.File;
 import java.util.List;
 
-public class HonkaiStarRail implements HoyoverseGame {
+public class HonkaiImpactGame implements HoyoverseGame {
 
     private final File basePath;
 
-    public HonkaiStarRail(File basePath) {
+    public HonkaiImpactGame(File basePath) {
 
         this.basePath = basePath;
         File gameDirectory = this.getGameDirectory();
 
-        File gameExecutable = new File(gameDirectory, "StarRail.exe");
+        File gameExecutable = new File(gameDirectory, "BH3.exe");
 
         if (!gameExecutable.exists()) {
             throw new InvalidGameDirectoryException("The path provided does not point to a valid game directory.");
@@ -27,7 +27,7 @@ public class HonkaiStarRail implements HoyoverseGame {
     @Override
     public String getName() {
 
-        return "Honkai: Star Rail";
+        return "Honkai Impact 3rd";
     }
 
     @Override
@@ -36,10 +36,11 @@ public class HonkaiStarRail implements HoyoverseGame {
         return new File(this.basePath, "Games");
     }
 
+
     @Override
     public File getAudioDirectory() {
 
-        return new File(this.getGameDirectory(), "StarRail_Data\\StreamingAssets\\Audio\\AudioPackage\\Windows");
+        return new File(this.getGameDirectory(), "BH3_Data\\StreamingAssets\\Audio\\GeneratedSoundBanks\\Windows");
     }
 
     @Override
@@ -51,6 +52,12 @@ public class HonkaiStarRail implements HoyoverseGame {
     @Override
     public List<PckAudioFile> getAudioFiles() {
 
-        return Utils.scanPck(this.getAudioDirectory());
+        return Utils.getDirectoryContent(this.getAudioDirectory())
+                    .stream()
+                    .filter(File::isFile)
+                    .filter(file -> file.getName().endsWith(".pck"))
+                    .filter(file -> file.getName().contains("_Default"))
+                    .map(PckAudioFile::new)
+                    .toList();
     }
 }

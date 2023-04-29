@@ -33,11 +33,9 @@ public class Pck2Wem implements AudioConverter<PckAudioFile> {
         String outputDir = output.getAbsolutePath();
 
         ProcessBuilder builder = new ProcessBuilder(program, waveScan, inputFile, outputDir);
-        Process        process = builder.start();
+        builder.redirectOutput(new File("NUL"));
+        Process process = builder.start();
         process.waitFor();
-        if (process.exitValue() > 0) {
-            throw new IllegalAccessException("AudioConverter failure: Exit code: " + process.exitValue());
-        }
 
         return output;
     }
