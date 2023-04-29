@@ -120,7 +120,7 @@ public class Application implements Callable<Integer> {
         AudioConverter<WemAudioFile> converter = new Wem2Wav();
 
         System.out.println("Detecting game...");
-        HoyoverseGame game = this.getGame();
+        HoyoverseGame game = HoyoverseGame.of(this.gameFolder);
         System.out.println("Detected " + game.getName() + " !");
 
         System.out.println("  > Audio Files detected: " + game.getAudioFiles().size());
@@ -228,24 +228,6 @@ public class Application implements Callable<Integer> {
         Utils.delete(EXTRACT_PCK_WEM_OUT);
         return 0;
     }
-
-    public HoyoverseGame getGame() {
-
-        // Detect game
-        try {
-            return new GenshinImpactGame(this.gameFolder);
-        } catch (InvalidGameDirectoryException ignore) {
-
-        }
-
-        try {
-            return new HonkaiStarRail(this.gameFolder);
-        } catch (InvalidGameDirectoryException ignore) {}
-
-        throw new IllegalStateException("Could not detect to which game the provided path belongs");
-
-    }
-
 
     private List<File> runExtract(AudioConverter<PckAudioFile> unpacker, AudioConverter<WemAudioFile> converter, List<PckAudioFile> pckFiles, File pckOut, File wemOut) {
 
