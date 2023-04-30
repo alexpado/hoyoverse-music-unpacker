@@ -1,8 +1,11 @@
-package ovh.akio.hmu.games;
+package ovh.akio.hmu.interfaces;
 
 import ovh.akio.hmu.entities.PckAudioFile;
 import ovh.akio.hmu.entities.UpdatePackage;
 import ovh.akio.hmu.exceptions.InvalidGameDirectoryException;
+import ovh.akio.hmu.games.GenshinImpactGame;
+import ovh.akio.hmu.games.HonkaiImpactGame;
+import ovh.akio.hmu.games.HonkaiStarRail;
 
 import java.io.File;
 import java.util.List;

@@ -4,6 +4,7 @@ import ovh.akio.hmu.Utils;
 import ovh.akio.hmu.entities.PckAudioFile;
 import ovh.akio.hmu.entities.UpdatePackage;
 import ovh.akio.hmu.exceptions.InvalidGameDirectoryException;
+import ovh.akio.hmu.interfaces.HoyoverseGame;
 
 import java.io.File;
 import java.util.List;
