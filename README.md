@@ -1,6 +1,7 @@
 # Hoyoverse Audio Unpacker
 
-*Thanks to [MeguminSama project](https://github.com/MeguminSama/genshin-audio-extractor) which has been a huge source of
+> *Thanks to [MeguminSama's project](https://github.com/MeguminSama/genshin-audio-extractor) which has been a huge
+source of
 inspiration for this.*
 
 ## Game Tested
@@ -11,53 +12,75 @@ inspiration for this.*
 
 ## Why ?
 
-This project has been made to extract music file from the game Genshin Impact, but later updated to support Honkai Star
-Rails.
+This project was made to extract music file from Genshin Impact, but later updated to support other Hoyoverse's title.
 
-**This program will only process Minimum.pck and Music\*.pck files**
+This program will only process PCK files that are known to contains mainly music, as extracting everything would also
+include voice lines and SFX. Maybe I'll add an option later to allow to extract everything, but please note that it will
+generate ***a lot*** of files.
+
+## Installation
+
+You'll need to install Java (at least version 17) for this program to work.
+Here's [the official download website](https://www.oracle.com/java/technologies/downloads/).
+
+You can then download the `hoyoverse-music-unpacker.zip` file from
+the [release page](https://github.com/alexpado/hoyoverse-music-unpacker/releases).
+
+Extract the zip anywhere, open the program directory (where there is the `jar` file and the `wrappers`
+directory), `Shift+Right Click` on an empty space and click `Open PowerShell window here` (label might vary slightly
+depending on your windows version)
 
 ## How to use it
 
-From the `--help` output:
-
 ```
-Usage: [-dhpV] -g=<genshinFolder> [-t=<threadCount>]
-  -d, --diff      Extract update package only
-  -g, --game=<gameFolder>
-                  Installation folder of the game
-  -h, --help      Show this help message and exit.
-  -p, --prefix    (With --diff) Add status prefix to files
+  -d, --diff                Extract update package only
+  -g, --game=<gameFolder>   Installation folder of the game
+  -h, --help                Show this help message and exit.
+  -p, --prefix              (With --diff) Add status prefix to files
   -t, --threads=<threadCount>
-                  Number of parallel thread that can be used.
-  -V, --version   Print version information and exit.
+                            Number of parallel thread that can be used.
+  -V, --version             Print version information and exit.
 ```
 
-> Please note that the game directory must be where the game and launcher are installed, not only the game
+> *Please note that the game directory must be where the launcher is, not the game !*
 
-e.g.: `D:\Program Files\Genshin Impact` not `D:\Program Files\Genshin Impact\Genshin Impact Game`
-e.g.: `D:\Program Files\Star Rail` not `D:\Program Files\Star Rail\Games`
+Here is a table to better explain what I mean (using my own install path, but you'll get the idea):
 
-### Examples
+| Game             | Right Path (launcher)          | Wrong path (game)                           |
+|------------------|--------------------------------|---------------------------------------------|
+| Genshin Impact   | D:\Games\Genshin Impact        | D:\Games\Genshin Impact\Genshin Impact game |
+| Honkai Star Rail | D:\Games\Star Rail             | D:\Games\Star Rail\Games                    |
+| Honkai Impact    | D:\Games\Honkai Impact 3rd glb | D:\Games\Honkai Impact 3rd glb\Games        |
+
+### Normal Usage: Extracting all musics
+
+> Launching the extraction process will remove all files previously extracted for the selected game ! Please make sure
+> you have nothing left in these folder before starting !
 
 If you want to extract music from the current version of the game:
 
 ```bash
-java -jar <whateverTheName>.jar --game="D:\Program Files\Genshin Impact"
+java -jar hoyoverse-music-unpacker.jar --game="D:\Games\Genshin Impact"
 ```
+
+*You have to replace the path of `--game` by your own. `"` around the game path are important !*
+
+Once finished, all musics will be present in the `extracted` folder.
+
+## Advanced Usage: Extracting update package
+> This has been tested and done only with Genshin Impact for now. Honkai Star Rail & Honkai Impact aren't supported.
 
 If you want to extract music from the update package (once the download through the launcher is finished):
 
 ```bash
-java -jar <whateverTheName>.jar --game="D:\Program Files\Genshin Impact" --diff
+java -jar hoyoverse-music-unpacker.jar --game="D:\Games\Genshin Impact" --diff
 ```
 
-> Please note that the update package stuff has been done only for Genshin. I'll wait for the first update of HSR to add it.
-
-The previous command will leave a lot of file, both created and updated... If you want to know which one has been
+This will leave a lot of file, both created and updated... If you want to know which one has been
 created/updated, add the `--prefix` flag:
 
-```
-java -jar <whateverTheName>.jar --game="D:\Program Files\Genshin Impact" --diff --prefix
+```bash
+java -jar hoyoverse-music-unpacker.jar --game="D:\Games\Genshin Impact" --diff --prefix
 ```
 
 Every file will now have a prefix:
