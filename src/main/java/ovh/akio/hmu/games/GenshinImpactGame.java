@@ -59,6 +59,12 @@ public class GenshinImpactGame implements HoyoverseGame {
     }
 
     @Override
+    public String getShortName() {
+
+        return "gi";
+    }
+
+    @Override
     public List<PckAudioFile> getAudioFiles() {
 
         return Utils.scanPck(this.getAudioDirectory());

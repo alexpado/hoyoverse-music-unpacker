@@ -28,7 +28,13 @@ public class HonkaiStarRail implements HoyoverseGame {
     @Override
     public String getName() {
 
-        return "Honkai: Star Rail";
+        return "Honkai Star Rail";
+    }
+
+    @Override
+    public String getShortName() {
+
+        return "hsr";
     }
 
     @Override

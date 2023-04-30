@@ -34,6 +34,8 @@ public interface HoyoverseGame {
 
     String getName();
 
+    String getShortName();
+
     File getGameDirectory();
 
     File getAudioDirectory();

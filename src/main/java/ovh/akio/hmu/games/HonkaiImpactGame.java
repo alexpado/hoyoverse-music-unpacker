@@ -32,6 +32,12 @@ public class HonkaiImpactGame implements HoyoverseGame {
     }
 
     @Override
+    public String getShortName() {
+
+        return "hi3";
+    }
+
+    @Override
     public File getGameDirectory() {
 
         return new File(this.basePath, "Games");

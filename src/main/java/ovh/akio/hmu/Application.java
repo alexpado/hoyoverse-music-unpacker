@@ -4,12 +4,10 @@ import me.tongfei.progressbar.ProgressBar;
 import ovh.akio.hmu.entities.PckAudioFile;
 import ovh.akio.hmu.entities.UpdatePackage;
 import ovh.akio.hmu.entities.WemAudioFile;
-import ovh.akio.hmu.interfaces.HoyoverseGame;
 import ovh.akio.hmu.interfaces.AudioConverter;
 import ovh.akio.hmu.interfaces.AudioFile;
+import ovh.akio.hmu.interfaces.HoyoverseGame;
 import ovh.akio.hmu.wrappers.HDiffPatchWrapper;
-import ovh.akio.hmu.wrappers.Pck2Wem;
-import ovh.akio.hmu.wrappers.Wem2Wav;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -106,21 +104,9 @@ public class Application implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
 
-        if (WORKSPACE.exists()) {
-            Utils.delete(WORKSPACE);
-        }
-
-        EXTRACT_PCK_WEM_OUT.mkdirs();
-        EXTRACT_WEM_WAV_OUT.mkdirs();
-
-        AudioConverter<PckAudioFile> unpacker  = new Pck2Wem();
-        AudioConverter<WemAudioFile> converter = new Wem2Wav();
-
         System.out.println("Detecting game...");
         HoyoverseGame game = HoyoverseGame.of(this.gameFolder);
-        System.out.println("Detected " + game.getName() + " !");
-
-        System.out.println("  > Audio Files detected: " + game.getAudioFiles().size());
+        System.out.println("  -- Detected " + game.getName() + " !");
 
         if (!this.diffMode && game.getUpdatePackage() != null) {
             System.out.println("An update package has been detected. To run the extraction in diff mode, add the --diff flag.");
@@ -131,9 +117,33 @@ public class Application implements Callable<Integer> {
             return 1;
         }
 
-        List<PckAudioFile> pckFiles        = game.getAudioFiles();
-        List<File>         currentWavFiles = this.runExtract(unpacker, converter, pckFiles, EXTRACT_PCK_WEM_OUT, EXTRACT_WEM_WAV_OUT);
+        GameUnpacker unpacker = new GameUnpacker(game, this.threadCount);
 
+        // Cleaning up the previous runs
+        System.out.println("Removing previous files...");
+        Utils.delete(unpacker.getWorkspace());
+        Utils.delete(unpacker.getUnpackingOutput());
+
+        if (!this.diffMode) {
+            System.out.println("Starting unpacking...");
+            unpacker.unpackFiles();
+            unpacker.convertFiles();
+            return 0;
+        }
+
+        // TODO:
+        //  If in DIFF mode:
+        //   1. Unpack PCK files to workspace (/wem)
+        //   2. Convert WEM files to WAV in workspace (/wav)
+        //   3. Unzip update zip package to workspace (/patch)
+        //   4. Patch PCK files using update package (/pck-patched)
+        //   5. Unpack patched PCK files (/wem-patched)
+        //   6. Convert WEM to WAV (/wav-patched)
+        //   7. Index files in /wav & /wav-patched
+        //   8. Compare/delete files and rename if --diff
+
+        // TODO: Refactor the code below when an update package will be available.
+        /*
         if (this.diffMode && game.getUpdatePackage() != null) {
 
             UPDATE_PCK_SRC_OUT.mkdirs();
@@ -220,84 +230,8 @@ public class Application implements Callable<Integer> {
             Utils.delete(UPDATE_DIFF_SRC);
 
             return 0;
-        }
+        }*/
 
-        Utils.delete(EXTRACT_PCK_WEM_OUT);
         return 0;
     }
-
-    private List<File> runExtract(AudioConverter<PckAudioFile> unpacker, AudioConverter<WemAudioFile> converter, List<PckAudioFile> pckFiles, File pckOut, File wemOut) {
-
-        this.runConvert(" Unpacking", pckOut, unpacker, pckFiles);
-        List<WemAudioFile> wemFiles = pckFiles.stream().flatMap(PckAudioFile::getOutputFiles).toList();
-        this.runConvert("Converting", wemOut, converter, wemFiles);
-        return wemFiles.stream().map(WemAudioFile::getOutput).collect(Collectors.toList());
-    }
-
-    private void extractUpdatePackage(UpdatePackage updatePackage) throws Exception {
-
-
-        byte[]         buffer   = new byte[1024];
-        ZipInputStream zis      = new ZipInputStream(new FileInputStream(updatePackage.getUpdatePackage()));
-        ZipEntry       zipEntry = zis.getNextEntry();
-        while (zipEntry != null) {
-            if (zipEntry.getName().contains("Windows/Minimum") || zipEntry.getName().contains("Windows/Music")) {
-                File newFile = newFile(zipEntry);
-                if (zipEntry.isDirectory()) {
-                    if (!newFile.isDirectory() && !newFile.mkdirs()) {
-                        throw new IOException("Failed to create directory " + newFile);
-                    }
-                } else {
-                    // fix for Windows-created archives
-                    File parent = newFile.getParentFile();
-                    if (!parent.isDirectory() && !parent.mkdirs()) {
-                        throw new IOException("Failed to create directory " + parent);
-                    }
-
-                    // write file content
-                    FileOutputStream fos = new FileOutputStream(newFile);
-                    int              len;
-                    while ((len = zis.read(buffer)) > 0) {
-                        fos.write(buffer, 0, len);
-                    }
-                    fos.close();
-                }
-            }
-            zipEntry = zis.getNextEntry();
-        }
-        zis.closeEntry();
-        zis.close();
-    }
-
-    private <T extends AudioFile> void runConvert(String name, File root, AudioConverter<T> converter, List<T> files) {
-
-        AtomicInteger   counter = new AtomicInteger(0);
-        ExecutorService pool    = Executors.newFixedThreadPool(Math.max(this.threadCount, 1));
-        List<Runnable>  tasks   = new ArrayList<>();
-
-        try (ProgressBar p = Utils.defaultProgressBar(name, files.size())) {
-            for (T file : files) {
-                final T fFile = file;
-                tasks.add(() -> {
-                    try {
-                        p.setExtraMessage(fFile.getName());
-                        File output = converter.handle(fFile, root);
-                        fFile.onHandled(output);
-                        p.step();
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-            }
-
-            CompletableFuture<?>[] futures = tasks.stream()
-                                                  .map(task -> CompletableFuture.runAsync(task, pool))
-                                                  .toArray(CompletableFuture[]::new);
-
-            CompletableFuture.allOf(futures).join();
-            pool.shutdown();
-            p.setExtraMessage("OK");
-        }
-    }
-
 }

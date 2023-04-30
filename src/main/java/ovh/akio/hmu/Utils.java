@@ -18,6 +18,45 @@ import java.util.stream.Collectors;
 
 public class Utils {
 
+    public static File asLocalDirectory(File root, String... path) {
+        File file = root;
+
+        for (String s : path) {
+            file = new File(file, s);
+        }
+
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+
+        return file;
+    }
+
+    public static File asLocalDirectory(String... path) {
+        return asLocalDirectory( new File("."), path);
+    }
+
+    public static File asLocalFile(File root, String... path) {
+
+        File file = root;
+        for (String s : path) {
+            file = new File(file, s);
+        }
+
+        File parentDir = file.getParentFile();
+
+        if (!parentDir.exists()) {
+            parentDir.mkdirs();
+        }
+
+        return file;
+    }
+
+    public static File asLocalFile(String... path) {
+
+        return asLocalFile(new File("."), path);
+    }
+
     public static void delete(File file) {
 
         if (file.isFile()) {
@@ -51,11 +90,6 @@ public class Utils {
 
         String fx = "%0" + (md.getDigestLength() * 2) + "x";
         return String.format(fx, new BigInteger(1, md.digest()));
-    }
-
-    public static boolean isGenshinDirectory(File directory) {
-
-        return directory.exists() && new File(directory, "Genshin Impact Game\\GenshinImpact.exe").exists();
     }
 
     public static List<File> getDirectoryContent(File directory) {
