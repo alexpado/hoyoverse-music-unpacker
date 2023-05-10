@@ -53,6 +53,13 @@ public class Application implements Callable<Integer> {
     private File gameFolder;
 
     @CommandLine.Option(
+            names = {"-o", "--output"},
+            description = "Output folder for the extracted files",
+            defaultValue = ""
+    )
+    private File outputFolder;
+
+    @CommandLine.Option(
             names = {"-d", "--diff"},
             description = "Extract update package only",
             defaultValue = "false"
@@ -117,7 +124,7 @@ public class Application implements Callable<Integer> {
             return 1;
         }
 
-        GameUnpacker unpacker = new GameUnpacker(game, this.threadCount);
+        GameUnpacker unpacker = new GameUnpacker(game, this.threadCount, outputFolder);
 
         // Cleaning up the previous runs
         System.out.println("Removing previous files...");
