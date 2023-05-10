@@ -47,7 +47,7 @@ public class GameUnpacker {
 
     public File getUnpackingOutput() {
 
-        return Utils.asLocalDirectory(outputDir, this.game.getShortName());
+        return Utils.asLocalDirectory(this.outputDir, this.game.getShortName());
     }
 
     private <T extends AudioFile> void run(String name, File output, AudioConverter<T> converter, Collection<T> files) {
