@@ -19,17 +19,25 @@ import java.util.concurrent.Executors;
 
 public class GameUnpacker {
 
+    private final File               outputDir;
     private final HoyoverseGame      game;
     private final ExecutorService    service;
     private final List<PckAudioFile> pckAudioFiles;
     private final List<WemAudioFile> wemAudioFiles;
 
-    public GameUnpacker(HoyoverseGame game, int maxThreads) {
+    public GameUnpacker(HoyoverseGame game, int maxThreads, File outputDir) {
 
         this.game          = game;
         this.service       = Executors.newFixedThreadPool(Math.max(maxThreads, 1));
         this.pckAudioFiles = this.game.getAudioFiles();
         this.wemAudioFiles = new ArrayList<>();
+
+        // If an output dir is selected, use it. Otherwise return the current directory
+        if (!outputDir.getName().equals("")) {
+            this.outputDir = new File(outputDir, "extracted");
+        } else {
+            this.outputDir = new File(".", "extracted");
+        }
     }
 
     public File getWorkspace() {
@@ -39,7 +47,7 @@ public class GameUnpacker {
 
     public File getUnpackingOutput() {
 
-        return Utils.asLocalDirectory("extracted", this.game.getShortName());
+        return Utils.asLocalDirectory(this.outputDir, this.game.getShortName());
     }
 
     private <T extends AudioFile> void run(String name, File output, AudioConverter<T> converter, Collection<T> files) {
