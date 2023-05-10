@@ -124,7 +124,7 @@ public class Application implements Callable<Integer> {
             return 1;
         }
 
-        GameUnpacker unpacker = new GameUnpacker(game, this.threadCount, outputFolder);
+        GameUnpacker unpacker = new GameUnpacker(game, this.threadCount, this.outputFolder);
 
         // Cleaning up the previous runs
         System.out.println("Removing previous files...");
