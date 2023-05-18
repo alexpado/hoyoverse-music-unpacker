@@ -4,47 +4,61 @@
 source of
 inspiration for this.*
 
-## Game Tested
+1. The project
+2. How to extract musics
+    1. Requirements and installation
+    2. How to use it
+3. About update packages
+4. Contributing
+5. Feedbacks
+6. External executables
 
-- Genshin Impact
-- Honkai Star Rails
-- Honkai Impact (but read more [here](https://github.com/alexpado/hoyoverse-music-unpacker/issues/2) before)
-
-## Why ?
+# 1. The project
 
 This project was made to extract music file from Genshin Impact, but later updated to support other Hoyoverse's title.
 
 This program will only process PCK files that are known to contains mainly music, as extracting everything would also
 include voice lines and SFX. Maybe I'll add an option later to allow to extract everything, but please note that it will
-generate ***a lot*** of files.
+generate ***a lot*** of files (meaning a lot of disk space and time would be required).
 
-## Installation
+# 2. How to extract musics
 
-You'll need to install Java (at least version 17) for this program to work.
-Here's [the official download website](https://www.oracle.com/java/technologies/downloads/).
+| Game             | Music Extraction                                                                 | Update Package Support |
+|------------------|----------------------------------------------------------------------------------|------------------------|
+| Genshin Impact   | ✅ Supported                                                                      | Not supported          |
+| Honkai Star Rail | ✅ Supported                                                                      | Not supported          |
+| Honkai Impact    | [Partial Support](https://github.com/alexpado/hoyoverse-music-unpacker/issues/2) | Not supported          |
 
-You can then download the `hoyoverse-music-unpacker.zip` file from
-the [release page](https://github.com/alexpado/hoyoverse-music-unpacker/releases).
+## Requirements and installation
 
-Extract the zip anywhere, open the program directory (where there is the `jar` file and the `wrappers`
-directory), `Shift+Right Click` on an empty space and click `Open PowerShell window here` (label might vary slightly
-depending on your windows version)
+1. Download and
+   install [Java 17 or newer from the official website](https://www.oracle.com/java/technologies/downloads/).
+2. Download the extractor from the [release page](https://github.com/alexpado/hoyoverse-music-unpacker/releases).
+3. Extract the zip file downloaded anywhere on your computer. The directory does not matter.
 
 ## How to use it
+
+You'll need to use the terminal to use the extractor. If you're not familiar on how to open the terminal in the
+directory you are in:
+
+1. Open the directory where the `hoyoverse-music-unpacker.jar` file and the `wrappers` directory are.
+2. Hold the `Shift` key and right-click on an empty space in the directory.
+3. Select the `Open PowerShell window here` (label might vary slightly depending on your Windows version)
 
 ```
   -d, --diff                Extract update package only
   -g, --game=<gameFolder>   Installation folder of the game
   -h, --help                Show this help message and exit.
+  -o, --output=<outputFolder>
+                            Output folder for the extracted files
   -p, --prefix              (With --diff) Add status prefix to files
   -t, --threads=<threadCount>
                             Number of parallel thread that can be used.
   -V, --version             Print version information and exit.
 ```
 
-> *Please note that the game directory must be where the launcher is, not the game !*
-
-Here is a table to better explain what I mean (using my own install path, but you'll get the idea):
+**Important:** Please note that `--game` option must be the path leading to the launcher, not directly the game. Here is
+a table to better explain what I mean (using my own install path, but you'll get the idea):
 
 | Game             | Right Path (launcher)          | Wrong path (game)                           |
 |------------------|--------------------------------|---------------------------------------------|
@@ -52,12 +66,7 @@ Here is a table to better explain what I mean (using my own install path, but yo
 | Honkai Star Rail | D:\Games\Star Rail             | D:\Games\Star Rail\Games                    |
 | Honkai Impact    | D:\Games\Honkai Impact 3rd glb | D:\Games\Honkai Impact 3rd glb\Games        |
 
-### Normal Usage: Extracting all musics
-
-> Launching the extraction process will remove all files previously extracted for the selected game ! Please make sure
-> you have nothing left in these folder before starting !
-
-If you want to extract music from the current version of the game:
+### Extracting all musics
 
 ```bash
 java -jar hoyoverse-music-unpacker.jar --game="D:\Games\Genshin Impact"
@@ -67,10 +76,38 @@ java -jar hoyoverse-music-unpacker.jar --game="D:\Games\Genshin Impact"
 
 Once finished, all musics will be present in the `extracted` folder.
 
-## Advanced Usage: Extracting update package
-> This has been tested and done only with Genshin Impact for now. Honkai Star Rail & Honkai Impact aren't supported.
+You can also change the output directory by using the `--output` option. Example:
 
-If you want to extract music from the update package (once the download through the launcher is finished):
+```bash
+java -jar hoyoverse-music-unpacker.jar --game="D:\Games\Genshin Impact" --output="D:\Documents\Musics"
+```
+
+This will extract all music in `D:\Documents\Musics` (a subdirectory will be created for each game).
+
+# 3. About update packages
+
+When a game is going to be updated in the next few days, Hoyoverse allows player to download the update package before
+the actual release. This package contains the whole update and can be used to retrieve the music before the game is
+updated.
+
+This is working by doing the same job as the launcher when applying the update. **This won't be done on your game
+files !** When patching, it does not modify the original file, but creates a new one, avoiding breaking your game.
+
+### Steps for extracting the update package (skip if you don't care)
+
+1. Unpack PCK files to workspace
+2. Convert WEM files to WAV in workspace
+3. Unzip update zip package to workspace
+4. Patch PCK files using update package
+5. Unpack patched PCK files
+6. Convert WEM to WAV
+7. Index files from step 2 and 6
+8. Compare/delete files and rename if --prefix
+
+> ❌ **The update package extraction feature is going under rewrite and won't be working.**
+
+If you want to extract music from the update package (once the download through the launcher is finished), you have to
+use the `--diff` flag:
 
 ```bash
 java -jar hoyoverse-music-unpacker.jar --game="D:\Games\Genshin Impact" --diff
@@ -91,12 +128,19 @@ Every file will now have a prefix:
 - **[D]**: The file has never been seen, but is very similar to an already existing one within the game.
     - *This happens way more often than you think...*
 
-### Feature Requests, Bug Report
+# 4. Contributing
 
-I might not look too much on feature requests, but surely on bug reports. Though for features, I'm open to PR, just open
-an issue beforehand to talk about it.
+I'm open for contribution, but if your contribution is a new feature instead of a
+bugfix, it may be wise to open a discussion [here](https://github.com/alexpado/hoyoverse-music-unpacker/discussions)
+before to avoid any potential waste of time.
 
-### External Programs
+# 5. Feedback
+
+For feature requests and question, please open a
+discussion [here](https://github.com/alexpado/hoyoverse-music-unpacker/discussions), for bug report please open an
+issue.
+
+# 6. External executables
 
 - **QuickBMS:** Used to unpack PCK files to WEM files
 - **VGMStream:** Used to convert WEM files to WAV files

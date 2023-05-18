@@ -2,7 +2,6 @@ package ovh.akio.hmu.games;
 
 import ovh.akio.hmu.Utils;
 import ovh.akio.hmu.entities.PckAudioFile;
-import ovh.akio.hmu.entities.UpdatePackage;
 import ovh.akio.hmu.exceptions.InvalidGameDirectoryException;
 import ovh.akio.hmu.interfaces.HoyoverseGame;
 
@@ -47,12 +46,6 @@ public class HonkaiStarRail implements HoyoverseGame {
     public File getAudioDirectory() {
 
         return new File(this.getGameDirectory(), "StarRail_Data\\StreamingAssets\\Audio\\AudioPackage\\Windows");
-    }
-
-    @Override
-    public UpdatePackage getUpdatePackage() {
-
-        return null;
     }
 
     @Override
