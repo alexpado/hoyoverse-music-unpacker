@@ -103,16 +103,16 @@ public class Application implements Callable<Integer> {
 
         // Cleaning up the previous runs
         System.out.println("Removing previous files...");
-        //Utils.delete(DiskUtils.workspace(game).toFile());
+        Utils.delete(DiskUtils.workspace(game).toFile());
 
         System.out.println("Starting unpacking...");
-        //unpacker.unpackFiles(AudioSource.GAME);
-        //unpacker.convertFiles(AudioSource.GAME);
+        unpacker.unpackFiles(AudioSource.GAME);
+        unpacker.convertFiles(AudioSource.GAME);
 
         return CODE_OK;
     }
 
-    private int differentialExtract(HoyoverseGame game, boolean flagFiles) throws IOException {
+    private int differentialExtract(HoyoverseGame game, boolean flagFiles) throws IOException, InterruptedException {
 
         GameUnpacker unpacker = new GameUnpacker(game, this.threadCount, this.outputFolder);
 

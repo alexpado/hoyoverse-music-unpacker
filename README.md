@@ -25,9 +25,9 @@ generate ***a lot*** of files (meaning a lot of disk space and time would be req
 
 | Game             | Music Extraction                                                                 | Update Package Support |
 |------------------|----------------------------------------------------------------------------------|------------------------|
-| Genshin Impact   | ✅ Supported                                                                      | Not supported          |
+| Genshin Impact   | ✅ Supported                                                                      | ✅ Supported            |
 | Honkai Star Rail | ✅ Supported                                                                      | Not supported          |
-| Honkai Impact    | [Partial Support](https://github.com/alexpado/hoyoverse-music-unpacker/issues/2) | Not supported          |
+| Honkai Impact    | [Partial Support](https://github.com/alexpado/hoyoverse-music-unpacker/issues/2) | ✅ Supported            |
 
 ## Requirements and installation
 
@@ -95,16 +95,16 @@ files !** When patching, it does not modify the original file, but creates a new
 
 ### Steps for extracting the update package (skip if you don't care)
 
-1. Unpack PCK files to workspace
-2. Convert WEM files to WAV in workspace
-3. Unzip update zip package to workspace
-4. Patch PCK files using update package
-5. Unpack patched PCK files
-6. Convert WEM to WAV
-7. Index files from step 2 and 6
-8. Compare/delete files and rename if --prefix
+1. Unpack PCK files to workspace (PCK -> WEM)
+2. Unzip update zip package to workspace
+3. Patch PCK files using update package (skipped for Honkai Impact which is not using HDIFF files)
+4. Unpack patched PCK files (PCK -> WEM)
+5. Convert WEM to WAV
+6. Index files from step 2 and 6
+7. Compare files and rename if --prefix
 
-> ❌ **The update package extraction feature is going under rewrite and won't be working.**
+> ❌ **The update package extraction feature is going under rewrite. Please check the compatibility table above for
+further details.**
 
 If you want to extract music from the update package (once the download through the launcher is finished), you have to
 use the `--diff` flag:
@@ -122,6 +122,7 @@ java -jar hoyoverse-music-unpacker.jar --game="D:\Games\Genshin Impact" --diff -
 
 Every file will now have a prefix:
 
+- **[-]**: The file did not change compared to the current version
 - **[C]**: The file has been created with this update
 - **[U]**: The file has been updated with this update
     - *You most likely already heard it, but you can check just in case*
