@@ -18,6 +18,6 @@ public class WrapperExecutableNotFound extends RuntimeException {
 
     public File getFile() {
 
-        return file;
+        return this.file;
     }
 }

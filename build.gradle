@@ -25,6 +25,10 @@ dependencies {
 
     implementation group: 'info.picocli', name: 'picocli', version: '4.6.3'
     implementation group: 'me.tongfei', name: 'progressbar', version: '0.9.3'
+
+    implementation group: 'net.sf.sevenzipjbinding', name: 'sevenzipjbinding', version: '16.02-2.01'
+    implementation group: 'net.sf.sevenzipjbinding', name: 'sevenzipjbinding-all-platforms', version: '16.02-2.01'
+
 }
 
 test {

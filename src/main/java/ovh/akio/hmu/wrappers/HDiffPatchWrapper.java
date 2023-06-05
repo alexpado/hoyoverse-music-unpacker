@@ -1,9 +1,11 @@
 package ovh.akio.hmu.wrappers;
 
 import ovh.akio.hmu.entities.PckAudioFile;
+import ovh.akio.hmu.exceptions.ConverterProgramException;
 import ovh.akio.hmu.exceptions.WrapperExecutableNotFound;
 
 import java.io.File;
+import java.io.IOException;
 
 public class HDiffPatchWrapper {
 
@@ -18,10 +20,10 @@ public class HDiffPatchWrapper {
         }
     }
 
-    public PckAudioFile patch(File sourceFile, File patchFile, File outputFile) throws Exception {
+    public PckAudioFile patch(PckAudioFile sourceFile, File patchFile, File outputFile) throws IOException, InterruptedException {
 
         String program    = this.executable.getAbsolutePath();
-        String oldPath    = sourceFile.getAbsolutePath();
+        String oldPath    = sourceFile.getSource().getAbsolutePath();
         String diffPath   = patchFile.getAbsolutePath();
         String outNewPath = outputFile.getAbsolutePath();
 
@@ -29,7 +31,10 @@ public class HDiffPatchWrapper {
         Process        process = builder.start();
         process.waitFor();
         if (process.exitValue() > 0) {
-            throw new IllegalAccessException("AudioConverter failure: Exit code: " + process.exitValue());
+            String processOutput = new String(process.getInputStream().readAllBytes());
+            String processError = new String(process.getErrorStream().readAllBytes());
+
+            throw new ConverterProgramException(process.exitValue(), processOutput, processError, sourceFile);
         }
 
         return new PckAudioFile(outputFile);

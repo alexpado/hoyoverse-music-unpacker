@@ -1,10 +1,12 @@
 package ovh.akio.hmu.wrappers;
 
 import ovh.akio.hmu.entities.PckAudioFile;
+import ovh.akio.hmu.exceptions.ExternalProgramException;
 import ovh.akio.hmu.exceptions.WrapperExecutableNotFound;
 import ovh.akio.hmu.interfaces.AudioConverter;
 
 import java.io.File;
+import java.io.IOException;
 
 public class Pck2Wem implements AudioConverter<PckAudioFile> {
 
@@ -22,7 +24,7 @@ public class Pck2Wem implements AudioConverter<PckAudioFile> {
     }
 
     @Override
-    public File handle(PckAudioFile input, File outputDirectory) throws Exception {
+    public File handle(PckAudioFile input, File outputDirectory) throws IOException, InterruptedException {
 
         File output = new File(outputDirectory, input.getName());
         output.mkdirs();

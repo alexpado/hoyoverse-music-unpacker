@@ -1,10 +1,14 @@
 package ovh.akio.hmu.wrappers;
 
+import ovh.akio.hmu.Utils;
 import ovh.akio.hmu.entities.WemAudioFile;
+import ovh.akio.hmu.exceptions.ConverterProgramException;
+import ovh.akio.hmu.exceptions.ExternalProgramException;
 import ovh.akio.hmu.exceptions.WrapperExecutableNotFound;
 import ovh.akio.hmu.interfaces.AudioConverter;
 
 import java.io.File;
+import java.io.IOException;
 
 public class Wem2Wav implements AudioConverter<WemAudioFile> {
 
@@ -20,9 +24,14 @@ public class Wem2Wav implements AudioConverter<WemAudioFile> {
     }
 
     @Override
-    public File handle(WemAudioFile input, File outputDirectory) throws Exception {
+    public File handle(WemAudioFile input, File outputDirectory) throws IOException, InterruptedException {
 
-        File   output     = new File(outputDirectory, input.getName() + ".wav");
+        File   category   = input.getSource().getParentFile();
+        String outputName = String.format("%s.wav", input.getName());
+
+        File categoryOutput = Utils.asLocalDirectory(outputDirectory, category.getName());
+        File output         = new File(categoryOutput, outputName);
+
         String program    = this.executable.getAbsolutePath();
         String inputFile  = input.getSource().getAbsolutePath();
         String outputFile = output.getAbsolutePath();
@@ -30,8 +39,12 @@ public class Wem2Wav implements AudioConverter<WemAudioFile> {
         ProcessBuilder builder = new ProcessBuilder(program, "-o", outputFile, inputFile);
         Process        process = builder.start();
         process.waitFor();
+
         if (process.exitValue() > 0) {
-            throw new IllegalAccessException("AudioConverter failure: Exit code: " + process.exitValue());
+            String processOutput = new String(process.getInputStream().readAllBytes());
+            String processError = new String(process.getErrorStream().readAllBytes());
+
+            throw new ConverterProgramException(process.exitValue(), processOutput, processError, input);
         }
 
         return output;
