@@ -26,7 +26,7 @@ generate ***a lot*** of files (meaning a lot of disk space and time would be req
 | Game             | Music Extraction                                                                 | Update Package Support |
 |------------------|----------------------------------------------------------------------------------|------------------------|
 | Genshin Impact   | ✅ Supported                                                                      | ✅ Supported            |
-| Honkai Star Rail | ✅ Supported                                                                      | Not supported          |
+| Honkai Star Rail | ✅ Supported                                                                      | ✅ Supported          |
 | Honkai Impact    | [Partial Support](https://github.com/alexpado/hoyoverse-music-unpacker/issues/2) | ✅ Supported            |
 
 ## Requirements and installation
@@ -102,9 +102,6 @@ files !** When patching, it does not modify the original file, but creates a new
 5. Convert WEM to WAV
 6. Index files from step 2 and 6
 7. Compare files and rename if --prefix
-
-> ❌ **The update package extraction feature is going under rewrite. Please check the compatibility table above for
-further details.**
 
 If you want to extract music from the update package (once the download through the launcher is finished), you have to
 use the `--diff` flag:
