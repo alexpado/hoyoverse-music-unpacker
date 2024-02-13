@@ -1,4 +1,4 @@
-package ovh.akio.hmu.games;
+package ovh.akio.hmu.games.cn;
 
 import me.tongfei.progressbar.ProgressBar;
 import net.sf.sevenzipjbinding.*;
@@ -11,12 +11,15 @@ import ovh.akio.hmu.exceptions.InvalidGameDirectoryException;
 import ovh.akio.hmu.interfaces.HoyoverseGame;
 import ovh.akio.hmu.interfaces.states.Patchable;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class HonkaiImpactGame implements HoyoverseGame, Patchable {
+public class HonkaiImpactGameCN implements HoyoverseGame, Patchable {
 
     private final File               basePath;
     private       File               updatePackage;
@@ -24,12 +27,10 @@ public class HonkaiImpactGame implements HoyoverseGame, Patchable {
     private       List<PckAudioFile> patchedPckAudioFiles = null;
     private       List<File>         updatePackageFiles   = null;
 
-    public HonkaiImpactGame(File basePath) {
+    public HonkaiImpactGameCN(File basePath) {
 
         this.basePath = basePath;
-        File gameDirectory = this.getGameDirectory();
-
-        File gameExecutable = new File(gameDirectory, "BH3.exe");
+        File gameExecutable = this.getExecutableFile();
 
         if (!gameExecutable.exists()) {
             throw new InvalidGameDirectoryException("The path provided does not point to a valid game directory.");
@@ -50,7 +51,7 @@ public class HonkaiImpactGame implements HoyoverseGame, Patchable {
     @Override
     public String getName() {
 
-        return "Honkai Impact 3rd";
+        return "Honkai Impact 3rd (CN)";
     }
 
     @Override
@@ -60,9 +61,21 @@ public class HonkaiImpactGame implements HoyoverseGame, Patchable {
     }
 
     @Override
+    public File getBasePath() {
+
+        return this.basePath;
+    }
+
+    @Override
     public File getGameDirectory() {
 
-        return new File(this.basePath, "Games");
+        return new File(this.getBasePath(), "Game");
+    }
+
+    @Override
+    public File getExecutableFile() {
+
+        return new File(this.getGameDirectory(), "BH3.exe");
     }
 
     @Override
@@ -143,7 +156,7 @@ public class HonkaiImpactGame implements HoyoverseGame, Patchable {
         try (ProgressBar pb = Utils.defaultProgressBar("Update Package", -1)) {
             try (RandomAccessFile raf = new RandomAccessFile(optionalFile.get(), "r")) {
                 Map<Integer, ISimpleInArchiveItem> archiveMap = new HashMap<>();
-                Map<Integer, File> fileMap = new HashMap<>();
+                Map<Integer, File>                 fileMap    = new HashMap<>();
 
                 File output = DiskUtils.update(this).toFile();
                 output.mkdirs();
@@ -155,7 +168,10 @@ public class HonkaiImpactGame implements HoyoverseGame, Patchable {
 
                         archiveMap.put(archiveItem.getItemIndex(), archiveItem);
 
-                        File outputFile = new File(output, archiveItem.getPath().substring(archiveItem.getPath().lastIndexOf("\\") + 1));
+                        File outputFile = new File(output,
+                                                   archiveItem.getPath()
+                                                              .substring(archiveItem.getPath().lastIndexOf("\\") + 1)
+                        );
                         if (outputFile.exists()) {
                             outputFile.delete();
                             outputFile.createNewFile();
@@ -170,7 +186,7 @@ public class HonkaiImpactGame implements HoyoverseGame, Patchable {
                 int[] indices = new int[archiveMap.size()];
 
                 List<Integer> list = archiveMap.keySet().stream().toList();
-                for (int i = 0 ; i < list.size() ; i++) {
+                for (int i = 0; i < list.size(); i++) {
                     indices[i] = list.get(i);
                 }
 
@@ -205,13 +221,13 @@ public class HonkaiImpactGame implements HoyoverseGame, Patchable {
                     @Override
                     public void setTotal(long total) {
 
-                        pb.maxHint(total / (1024*1024));
+                        pb.maxHint(total / (1024 * 1024));
                     }
 
                     @Override
                     public void setCompleted(long complete) {
 
-                        pb.stepTo(complete / (1024*1024));
+                        pb.stepTo(complete / (1024 * 1024));
                     }
                 });
             }
@@ -229,4 +245,5 @@ public class HonkaiImpactGame implements HoyoverseGame, Patchable {
 
         return this.updatePackageFiles;
     }
+
 }
