@@ -1,4 +1,4 @@
-package ovh.akio.hmu.games;
+package ovh.akio.hmu.games.cn;
 
 import net.sf.sevenzipjbinding.SevenZipException;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchiveItem;
@@ -13,13 +13,13 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class HonkaiStarRail extends DifferentialPatchingGame {
+public class HonkaiStarRailCN extends DifferentialPatchingGame {
 
     private final File               basePath;
     private final File               updatePackage;
     private       List<PckAudioFile> gamePckAudioFiles = null;
 
-    public HonkaiStarRail(File basePath) {
+    public HonkaiStarRailCN(File basePath) {
 
         this.basePath = basePath;
         File gameDirectory = this.getGameDirectory();
@@ -54,7 +54,7 @@ public class HonkaiStarRail extends DifferentialPatchingGame {
     @Override
     public String getName() {
 
-        return "Honkai Star Rail";
+        return "Honkai Star Rail (CN)";
     }
 
     @Override
@@ -63,10 +63,21 @@ public class HonkaiStarRail extends DifferentialPatchingGame {
         return "hsr";
     }
 
+    public File getBasePath() {
+
+        return this.basePath;
+    }
+
     @Override
     public File getGameDirectory() {
 
-        return new File(this.basePath, "Games");
+        return new File(this.basePath, "Game");
+    }
+
+    @Override
+    public File getExecutableFile() {
+
+        return new File(this.getGameDirectory(), "StarRail.exe");
     }
 
     @Override
@@ -96,4 +107,5 @@ public class HonkaiStarRail extends DifferentialPatchingGame {
 
         return Optional.ofNullable(this.updatePackage);
     }
+
 }
