@@ -25,7 +25,7 @@ public abstract class DifferentialPatchingGame implements HoyoverseGame, Patchab
     public DifferentialPatchingGame() {
 
         this.patchedPckAudioFiles = new ArrayList<>();
-        this.updatePackageFiles = new ArrayList<>();
+        this.updatePackageFiles   = new ArrayList<>();
     }
 
     public abstract boolean mayHandleArchiveItem(ISimpleInArchiveItem archiveItem) throws SevenZipException;
@@ -125,7 +125,7 @@ public abstract class DifferentialPatchingGame implements HoyoverseGame, Patchab
                 int[] indices = new int[archiveMap.size()];
 
                 List<Integer> list = archiveMap.keySet().stream().toList();
-                for (int i = 0 ; i < list.size() ; i++) {
+                for (int i = 0; i < list.size(); i++) {
                     indices[i] = list.get(i);
                 }
 
@@ -183,4 +183,5 @@ public abstract class DifferentialPatchingGame implements HoyoverseGame, Patchab
 
         return this.updatePackageFiles;
     }
+
 }

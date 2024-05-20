@@ -1,4 +1,4 @@
-package ovh.akio.hmu.games;
+package ovh.akio.hmu.games.cn;
 
 import net.sf.sevenzipjbinding.SevenZipException;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchiveItem;
@@ -13,18 +13,16 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GenshinImpactGame extends DifferentialPatchingGame {
+public class GenshinImpactGameCN extends DifferentialPatchingGame {
 
     private final File               basePath;
     private final File               updatePackage;
     private       List<PckAudioFile> gamePckAudioFiles = null;
 
-    public GenshinImpactGame(File basePath) {
+    public GenshinImpactGameCN(File basePath) {
 
         this.basePath = basePath;
-        File gameDirectory = this.getGameDirectory();
-
-        File gameExecutable = new File(gameDirectory, "GenshinImpact.exe");
+        File gameExecutable = this.getExecutableFile();
 
         if (!gameExecutable.exists()) {
             throw new InvalidGameDirectoryException("The path provided does not point to a valid game directory.");
@@ -43,6 +41,7 @@ public class GenshinImpactGame extends DifferentialPatchingGame {
 
     @Override
     public boolean mayHandleArchiveItem(ISimpleInArchiveItem archiveItem) throws SevenZipException {
+
         boolean isPckDiff = archiveItem.getPath().endsWith(".pck.hdiff");
         boolean isMinimum = archiveItem.getPath().contains("Minimum");
         boolean isMusic   = archiveItem.getPath().contains("Music");
@@ -51,27 +50,39 @@ public class GenshinImpactGame extends DifferentialPatchingGame {
     }
 
     @Override
-    public File getGameDirectory() {
-
-        return new File(this.basePath, "Genshin Impact game");
-    }
-
-    @Override
-    public File getAudioDirectory() {
-
-        return new File(this.getGameDirectory(), "GenshinImpact_Data\\StreamingAssets\\AudioAssets");
-    }
-
-    @Override
     public String getName() {
 
-        return "Genshin Impact";
+        return "Genshin Impact (CN)";
     }
 
     @Override
     public String getShortName() {
 
         return "gi";
+    }
+
+    @Override
+    public File getBasePath() {
+
+        return this.basePath;
+    }
+
+    @Override
+    public File getGameDirectory() {
+
+        return new File(this.getBasePath(), "Genshin Impact game");
+    }
+
+    @Override
+    public File getExecutableFile() {
+
+        return new File(this.getGameDirectory(), "YuanShen.exe");
+    }
+
+    @Override
+    public File getAudioDirectory() {
+
+        return new File(this.getGameDirectory(), "YuanShen_Data\\StreamingAssets\\AudioAssets");
     }
 
     @Override
@@ -95,4 +106,5 @@ public class GenshinImpactGame extends DifferentialPatchingGame {
 
         return Optional.ofNullable(this.updatePackage);
     }
+
 }
