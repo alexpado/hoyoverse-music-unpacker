@@ -25,9 +25,11 @@ generate ***a lot*** of files (meaning a lot of disk space and time would be req
 
 | Game             | Music Extraction                                                                 | Update Package Support |
 |------------------|----------------------------------------------------------------------------------|------------------------|
-| Genshin Impact   | ✅ Supported                                                                      | ✅ Supported            |
-| Honkai Star Rail | ✅ Supported                                                                      | ✅ Supported          |
-| Honkai Impact    | [Partial Support](https://github.com/alexpado/hoyoverse-music-unpacker/issues/2) | ✅ Supported            |
+| Genshin Impact   | ✅ Supported                                                                      | ❓ Unsure               |
+| Honkai Star Rail | ✅ Supported                                                                      | ❓ Unsure               |
+| Honkai Impact    | [Partial Support](https://github.com/alexpado/hoyoverse-music-unpacker/issues/2) | ❓ Unsure               |
+
+*More about update package support [here](#3-about-update-packages)*
 
 ## Requirements and installation
 
@@ -86,6 +88,14 @@ This will extract all music in `D:\Documents\Musics` (a subdirectory will be cre
 
 # 3. About update packages
 
+> [!IMPORTANT]
+> Since Hoyoverse started changing the way the pre-download package work, you might not be able to use this. The reason
+> being that they're not releasing it for everyone at the same time. Using the program in diff mode will not work and
+> warn you that it could not find any update package.
+>
+> I'm working on a way to make it compatible, but it might take some time. If you have an idea about it, do not hesitate
+> to open a discussion.
+
 When a game is going to be updated in the next few days, Hoyoverse allows player to download the update package before
 the actual release. This package contains the whole update and can be used to retrieve the music before the game is
 updated.
@@ -120,9 +130,10 @@ java -jar hoyoverse-music-unpacker.jar --game="D:\Games\Genshin Impact" --diff -
 Every file will now have a prefix:
 
 - **[-]**: The file did not change compared to the current version
-- **[C]**: The file has been created with this update
-- **[U]**: The file has been updated with this update
-    - *You most likely already heard it, but you can check just in case*
+- **[C]**: The file has been created with this update.
+- **[U]**: The file has been updated with this update.
+    - *The file being updated might mean two things: Either it is an old song that has been updated/renamed, or it's a
+      new song using an old filename.*
 - **[D]**: The file has never been seen, but is very similar to an already existing one within the game.
     - *This happens way more often than you think...*
 
