@@ -114,12 +114,21 @@ public class Utils {
             return Collections.emptyList();
         }
 
-        return Utils.getDirectoryContent(path)
+        if (!Application.MAIN.AllowAnyAudioFiles) {
+            return Utils.getDirectoryContent(path)
+                    .stream()
+                    .filter(File::isFile)
+                    .filter(file -> file.getName().endsWith(".pck"))
+                    .map(PckAudioFile::new)
+                    .toList();
+        } else {
+            return Utils.getDirectoryContent(path)
                     .stream()
                     .filter(File::isFile)
                     .filter(file -> file.getName().endsWith(".pck"))
                     .filter(file -> file.getName().startsWith("Minimum") || file.getName().startsWith("Music"))
                     .map(PckAudioFile::new)
                     .toList();
+        }
     }
 }

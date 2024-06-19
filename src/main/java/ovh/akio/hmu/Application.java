@@ -24,12 +24,22 @@ import java.util.stream.Stream;
         version = "Hoyoverse Audio Extractor 1.2"
 )
 public class Application implements Callable<Integer> {
+    public Application() {
+        MAIN = this;
+    }
 
     private static final int CODE_OK                   = 0;
     private static final int CODE_DIFF_MODE_IMPOSSIBLE = 1;
     private static final int CODE_NO_UPDATE            = 2;
 
+    public static Application MAIN;
 
+    @CommandLine.Option(
+            names ={"-a", "--all"},
+            description = "Search for all valid audio files (not just music)",
+            defaultValue="false"
+    )
+    public boolean AllowAnyAudioFiles;
     @CommandLine.Option(
             names = {"-g", "--game"},
             description = "Installation folder of the game",
@@ -66,7 +76,6 @@ public class Application implements Callable<Integer> {
     private int threadCount;
 
     public static void main(String... args) {
-
         System.exit(new CommandLine(new Application()).execute(args));
     }
 
