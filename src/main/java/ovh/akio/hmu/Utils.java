@@ -114,7 +114,7 @@ public class Utils {
             return Collections.emptyList();
         }
 
-        if (!Application.MAIN.AllowAnyAudioFiles) {
+        if (Application.MAIN.AllowAnyAudioFiles) {
             return Utils.getDirectoryContent(path)
                     .stream()
                     .filter(File::isFile)
