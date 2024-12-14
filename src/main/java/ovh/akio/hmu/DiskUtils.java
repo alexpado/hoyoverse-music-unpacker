@@ -35,7 +35,7 @@ public class DiskUtils {
 
     public static Path extracted(HoyoverseGame game, File root) {
 
-        return Path.of(root.getAbsolutePath(), game.getShortName());
+        return Path.of(root.getAbsolutePath());
     }
 
     public static Path update(HoyoverseGame game) {
