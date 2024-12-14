@@ -22,15 +22,14 @@ public class HonkaiStarRailCN extends DifferentialPatchingGame {
     public HonkaiStarRailCN(File basePath) {
 
         this.basePath = basePath;
-        File gameDirectory = this.getGameDirectory();
 
-        File gameExecutable = new File(gameDirectory, "StarRail.exe");
+        File gameExecutable = new File(this.getBasePath(), "StarRail.exe");
 
         if (!gameExecutable.exists()) {
             throw new InvalidGameDirectoryException("The path provided does not point to a valid game directory.");
         }
 
-        List<File> gameFiles = Utils.getDirectoryContent(this.getGameDirectory());
+        List<File> gameFiles = Utils.getDirectoryContent(this.getBasePath());
         Pattern    pattern   = Pattern.compile("game_(?<in>.*)_(?<out>.*)_hdiff_(?<sign>.*)\\.zip");
 
         this.updatePackage = gameFiles.stream()
@@ -69,21 +68,15 @@ public class HonkaiStarRailCN extends DifferentialPatchingGame {
     }
 
     @Override
-    public File getGameDirectory() {
-
-        return new File(this.basePath, "Game");
-    }
-
-    @Override
     public File getExecutableFile() {
 
-        return new File(this.getGameDirectory(), "StarRail.exe");
+        return new File(this.getBasePath(), "StarRail.exe");
     }
 
     @Override
     public File getAudioDirectory() {
 
-        return new File(this.getGameDirectory(), "StarRail_Data\\StreamingAssets\\Audio\\AudioPackage\\Windows");
+        return new File(this.getBasePath(), "StarRail_Data\\StreamingAssets\\Audio\\AudioPackage\\Windows");
     }
 
     @Override

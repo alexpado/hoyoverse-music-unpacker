@@ -37,7 +37,7 @@ public class HonkaiImpactGameCN implements HoyoverseGame, Patchable {
         }
 
 
-        List<File> gameFiles = Utils.getDirectoryContent(this.getGameDirectory());
+        List<File> gameFiles = Utils.getDirectoryContent(this.getBasePath());
         Pattern    pattern   = Pattern.compile("BH3_v(?<out>.*)_(?<sign>.*)\\.7z");
 
         this.updatePackage = gameFiles.stream()
@@ -67,21 +67,15 @@ public class HonkaiImpactGameCN implements HoyoverseGame, Patchable {
     }
 
     @Override
-    public File getGameDirectory() {
-
-        return new File(this.getBasePath(), "Game");
-    }
-
-    @Override
     public File getExecutableFile() {
 
-        return new File(this.getGameDirectory(), "BH3.exe");
+        return new File(this.getBasePath(), "BH3.exe");
     }
 
     @Override
     public File getAudioDirectory() {
 
-        return new File(this.getGameDirectory(), "BH3_Data\\StreamingAssets\\Audio\\GeneratedSoundBanks\\Windows");
+        return new File(this.getBasePath(), "BH3_Data\\StreamingAssets\\Audio\\GeneratedSoundBanks\\Windows");
     }
 
     @Override

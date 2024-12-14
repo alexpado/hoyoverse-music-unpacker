@@ -17,10 +17,4 @@ public class HonkaiImpactGameOS extends HonkaiImpactGameCN {
         return "Honkai Impact 3rd (OS)";
     }
 
-    @Override
-    public File getGameDirectory() {
-
-        return new File(this.getBasePath(), "Games");
-    }
-
 }

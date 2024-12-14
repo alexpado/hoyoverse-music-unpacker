@@ -6,7 +6,6 @@ import java.io.File;
 
 public class HonkaiStarRailOS extends HonkaiStarRailCN {
 
-
     public HonkaiStarRailOS(File basePath) {
 
         super(basePath);
@@ -16,12 +15,6 @@ public class HonkaiStarRailOS extends HonkaiStarRailCN {
     public String getName() {
 
         return "Honkai Star Rail (OS)";
-    }
-
-    @Override
-    public File getGameDirectory() {
-
-        return new File(this.getBasePath(), "Games");
     }
 
 }

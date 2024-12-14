@@ -25,9 +25,9 @@ generate ***a lot*** of files (meaning a lot of disk space and time would be req
 
 | Game             | Music Extraction                                                                 | Update Package Support |
 |------------------|----------------------------------------------------------------------------------|------------------------|
-| Genshin Impact   | ✅ Supported                                                                      | ❓ Unsure               |
-| Honkai Star Rail | ✅ Supported                                                                      | ❓ Unsure               |
-| Honkai Impact    | [Partial Support](https://github.com/alexpado/hoyoverse-music-unpacker/issues/2) | ❓ Unsure               |
+| Genshin Impact   | ✅ Supported                                                                      | ❓ Not Supported        |
+| Honkai Star Rail | ✅ Supported                                                                      | ❓ Not Supported        |
+| Honkai Impact    | [Partial Support](https://github.com/alexpado/hoyoverse-music-unpacker/issues/2) | ❓ Not Supported        |
 
 *More about update package support [here](#3-about-update-packages)*
 
@@ -59,14 +59,16 @@ directory you are in:
   -V, --version             Print version information and exit.
 ```
 
-**Important:** Please note that `--game` option must be the path leading to the launcher, not directly the game. Here is
+**Important:** Please note that `--game` option must be the path leading to the **game**, not the launcher. Here is
 a table to better explain what I mean (using my own install path, but you'll get the idea):
 
-| Game             | Right Path (launcher)          | Wrong path (game)                           |
+| Game             | Wrong Path (launcher)          | Right path (game)                           |
 |------------------|--------------------------------|---------------------------------------------|
 | Genshin Impact   | D:\Games\Genshin Impact        | D:\Games\Genshin Impact\Genshin Impact game |
 | Honkai Star Rail | D:\Games\Star Rail             | D:\Games\Star Rail\Games                    |
 | Honkai Impact    | D:\Games\Honkai Impact 3rd glb | D:\Games\Honkai Impact 3rd glb\Games        |
+
+> You might have a different folder name with the new launcher, but the rule is you have to select the folder containing the game executable.
 
 ### Extracting all musics
 
@@ -84,7 +86,7 @@ You can also change the output directory by using the `--output` option. Example
 java -jar hoyoverse-music-unpacker.jar --game="D:\Games\Genshin Impact" --output="D:\Documents\Musics"
 ```
 
-This will extract all music in `D:\Documents\Musics` (a subdirectory will be created for each game).
+This will extract all music in `D:\Documents\Musics`.
 
 # 3. About update packages
 

@@ -20,13 +20,13 @@ public class GenshinImpactGameOS extends GenshinImpactGameCN {
     @Override
     public File getExecutableFile() {
 
-        return new File(this.getGameDirectory(), "GenshinImpact.exe");
+        return new File(this.getBasePath(), "GenshinImpact.exe");
     }
 
     @Override
     public File getAudioDirectory() {
 
-        return new File(this.getGameDirectory(), "GenshinImpact_Data\\StreamingAssets\\AudioAssets");
+        return new File(this.getBasePath(), "GenshinImpact_Data\\StreamingAssets\\AudioAssets");
     }
 
 }

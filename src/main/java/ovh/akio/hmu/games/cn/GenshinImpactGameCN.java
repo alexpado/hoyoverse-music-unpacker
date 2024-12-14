@@ -28,7 +28,7 @@ public class GenshinImpactGameCN extends DifferentialPatchingGame {
             throw new InvalidGameDirectoryException("The path provided does not point to a valid game directory.");
         }
 
-        List<File> gameFiles = Utils.getDirectoryContent(this.getGameDirectory());
+        List<File> gameFiles = Utils.getDirectoryContent(this.getBasePath());
         Pattern    pattern   = Pattern.compile("game_(?<in>.*)_(?<out>.*)_hdiff_(?<sign>.*)\\.zip");
 
         this.updatePackage = gameFiles.stream()
@@ -68,21 +68,15 @@ public class GenshinImpactGameCN extends DifferentialPatchingGame {
     }
 
     @Override
-    public File getGameDirectory() {
-
-        return new File(this.getBasePath(), "Genshin Impact game");
-    }
-
-    @Override
     public File getExecutableFile() {
 
-        return new File(this.getGameDirectory(), "YuanShen.exe");
+        return new File(this.getBasePath(), "YuanShen.exe");
     }
 
     @Override
     public File getAudioDirectory() {
 
-        return new File(this.getGameDirectory(), "YuanShen_Data\\StreamingAssets\\AudioAssets");
+        return new File(this.getBasePath(), "YuanShen_Data\\StreamingAssets\\AudioAssets");
     }
 
     @Override

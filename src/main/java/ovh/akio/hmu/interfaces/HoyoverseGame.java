@@ -56,8 +56,6 @@ public interface HoyoverseGame {
 
     File getBasePath();
 
-    File getGameDirectory();
-
     File getExecutableFile();
 
     File getAudioDirectory();
