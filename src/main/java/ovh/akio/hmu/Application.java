@@ -99,15 +99,13 @@ public class Application implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
 
-        if (this.allowAnyAudioFiles) {
-            this.customFileFilter = ".*";
-        }
-
         System.out.println("Detecting game...");
         HoyoverseGame game = HoyoverseGame.of(this.gameFolder);
         System.out.println("  -- Detected " + game.getName() + " !");
 
-        if (customFileFilter.isBlank()) {
+        if (this.allowAnyAudioFiles) {
+            this.activeFileFilter = file -> true;
+        } else if (customFileFilter.isBlank()) {
             this.activeFileFilter = game.getGameType().getDefaultFileFilter();
         } else {
             Pattern pattern = Pattern.compile(customFileFilter);
