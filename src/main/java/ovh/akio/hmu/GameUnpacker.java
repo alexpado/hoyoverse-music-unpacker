@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Predicate;
 
 public class GameUnpacker {
 
@@ -32,7 +33,7 @@ public class GameUnpacker {
         this.service = Executors.newFixedThreadPool(Math.max(maxThreads, 1));
 
         // If an output dir is selected, use it. Otherwise return the current directory
-        if (!outputDir.getName().equals("")) {
+        if (!outputDir.getName().isEmpty()) {
             this.outputDir = outputDir;
         } else {
             this.outputDir = new File(".", "extracted");
@@ -74,10 +75,10 @@ public class GameUnpacker {
         }
     }
 
-    private List<WemAudioFile> getWemAudioFiles(AudioSource source) {
+    private List<WemAudioFile> getWemAudioFiles(AudioSource source, Predicate<File> filter) {
 
         return switch (source) {
-            case GAME -> this.game.getAudioFiles().stream().flatMap(PckAudioFile::getOutputFiles).toList();
+            case GAME -> this.game.getAudioFiles(filter).stream().flatMap(PckAudioFile::getOutputFiles).toList();
             case PATCHED -> ((Patchable) this.game).getPatchedFiles()
                                                    .stream()
                                                    .flatMap(PckAudioFile::getOutputFiles)
@@ -85,11 +86,11 @@ public class GameUnpacker {
         };
     }
 
-    public void unpackFiles(AudioSource source) {
+    public void unpackFiles(AudioSource source, Predicate<File> filter) {
 
         switch (source) {
             case GAME -> {
-                this.run("     Unpacking", DiskUtils.unpack(this.game), new Pck2Wem(), this.game.getAudioFiles());
+                this.run("     Unpacking", DiskUtils.unpack(this.game), new Pck2Wem(), this.game.getAudioFiles(filter));
             }
             case PATCHED -> {
                 if (this.game instanceof Patchable patchableGame) {
@@ -101,8 +102,14 @@ public class GameUnpacker {
         }
     }
 
-    public void convertFiles(AudioSource source) {
+    public void convertFiles(AudioSource source, Predicate<File> filter) {
 
-        this.run("    Extracting", DiskUtils.extracted(this.game, this.outputDir), new Wem2Wav(), this.getWemAudioFiles(source));
+        this.run(
+                "    Extracting",
+                DiskUtils.extracted(this.game, this.outputDir),
+                new Wem2Wav(),
+                this.getWemAudioFiles(source, filter)
+        );
     }
+
 }

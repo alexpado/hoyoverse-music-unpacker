@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 @CommandLine.Command(
@@ -29,6 +31,20 @@ public class Application implements Callable<Integer> {
     private static final int CODE_DIFF_MODE_IMPOSSIBLE = 1;
     private static final int CODE_NO_UPDATE            = 2;
 
+
+    @CommandLine.Option(
+            names = {"-a", "--all"},
+            description = "Search for all valid audio files (not just music)",
+            defaultValue = "false"
+    )
+    private boolean allowAnyAudioFiles;
+
+    @CommandLine.Option(
+            names = {"-f", "--filter"},
+            description = "Input a custom file filter as regex",
+            defaultValue = ""
+    )
+    private String customFileFilter;
 
     @CommandLine.Option(
             names = {"-g", "--game"},
@@ -65,6 +81,8 @@ public class Application implements Callable<Integer> {
     )
     private int threadCount;
 
+    private Predicate<File> activeFileFilter;
+
     public static void main(String... args) {
 
         System.exit(new CommandLine(new Application()).execute(args));
@@ -81,10 +99,20 @@ public class Application implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
 
+        if (this.allowAnyAudioFiles) {
+            this.customFileFilter = ".*";
+        }
+
         System.out.println("Detecting game...");
         HoyoverseGame game = HoyoverseGame.of(this.gameFolder);
         System.out.println("  -- Detected " + game.getName() + " !");
 
+        if (customFileFilter.isBlank()) {
+            this.activeFileFilter = game.getGameType().getDefaultFileFilter();
+        } else {
+            Pattern pattern = Pattern.compile(customFileFilter);
+            this.activeFileFilter = file -> pattern.asMatchPredicate().test(file.getName());
+        }
 
         if (this.diffMode) {
             return this.differentialExtract(game, this.prefixEnabled);
@@ -106,8 +134,8 @@ public class Application implements Callable<Integer> {
         Utils.delete(DiskUtils.workspace(game).toFile());
 
         System.out.println("Starting unpacking...");
-        unpacker.unpackFiles(AudioSource.GAME);
-        unpacker.convertFiles(AudioSource.GAME);
+        unpacker.unpackFiles(AudioSource.GAME, this.activeFileFilter);
+        unpacker.convertFiles(AudioSource.GAME, this.activeFileFilter);
 
         return CODE_OK;
     }
@@ -130,13 +158,13 @@ public class Application implements Callable<Integer> {
         System.out.println("Removing previous files...");
         Utils.delete(DiskUtils.workspace(game).toFile());
 
-        unpacker.unpackFiles(AudioSource.GAME);
+        unpacker.unpackFiles(AudioSource.GAME, this.activeFileFilter);
 
         patchable.extractUpdatePackage();
         patchable.patch();
 
-        unpacker.unpackFiles(AudioSource.PATCHED);
-        unpacker.convertFiles(AudioSource.PATCHED);
+        unpacker.unpackFiles(AudioSource.PATCHED, this.activeFileFilter);
+        unpacker.convertFiles(AudioSource.PATCHED, this.activeFileFilter);
 
         if (!flagFiles) {
             return CODE_OK;
@@ -148,7 +176,7 @@ public class Application implements Callable<Integer> {
                                                  .flatMap(PckAudioFile::getOutputFiles)
                                                  .toList();
 
-        List<WemAudioFile> originalWem = game.getAudioFiles()
+        List<WemAudioFile> originalWem = game.getAudioFiles(this.activeFileFilter)
                                              .stream()
                                              .flatMap(PckAudioFile::getOutputFiles)
                                              .toList();
@@ -212,8 +240,11 @@ public class Application implements Callable<Integer> {
 
                 if (output != null) {
 
-                    File newFile = new File(output.getParent(), String.format("[%s] %s.wav", wemAudioFile.getState()
-                                                                                                         .getFlag(), wemAudioFile.getName()));
+                    File newFile = new File(
+                            output.getParent(),
+                            String.format("[%s] %s.wav", wemAudioFile.getState().getFlag(), wemAudioFile.getName())
+                    );
+
                     if (output.renameTo(newFile)) {
                         wemAudioFile.onHandled(newFile);
                     }
@@ -225,4 +256,5 @@ public class Application implements Callable<Integer> {
 
         return CODE_OK;
     }
+
 }

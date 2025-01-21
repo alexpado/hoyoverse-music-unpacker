@@ -13,7 +13,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -107,7 +106,7 @@ public class Utils {
         return Collections.emptyList();
     }
 
-    public static List<PckAudioFile> scanPck(File path) {
+    public static List<PckAudioFile> scanPck(File path, Predicate<File> filter) {
 
         if (!path.exists()) {
             System.err.println("Not an audio output directory: " + path.getAbsolutePath());
@@ -115,11 +114,11 @@ public class Utils {
         }
 
         return Utils.getDirectoryContent(path)
-                    .stream()
-                    .filter(File::isFile)
-                    .filter(file -> file.getName().endsWith(".pck"))
-                    .filter(file -> file.getName().startsWith("Minimum") || file.getName().startsWith("Music"))
-                    .map(PckAudioFile::new)
-                    .toList();
+                .stream()
+                .filter(File::isFile)
+                .filter(file -> file.getName().endsWith(".pck"))
+                .filter(filter)
+                .map(PckAudioFile::new)
+                .toList();
     }
 }

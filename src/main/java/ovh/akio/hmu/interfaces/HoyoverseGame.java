@@ -1,12 +1,18 @@
 package ovh.akio.hmu.interfaces;
 
 import ovh.akio.hmu.entities.PckAudioFile;
+import ovh.akio.hmu.enums.Game;
 import ovh.akio.hmu.exceptions.InvalidGameDirectoryException;
-import ovh.akio.hmu.games.cn.*;
-import ovh.akio.hmu.games.os.*;
+import ovh.akio.hmu.games.cn.GenshinImpactGameCN;
+import ovh.akio.hmu.games.cn.HonkaiImpactGameCN;
+import ovh.akio.hmu.games.cn.HonkaiStarRailCN;
+import ovh.akio.hmu.games.os.GenshinImpactGameOS;
+import ovh.akio.hmu.games.os.HonkaiImpactGameOS;
+import ovh.akio.hmu.games.os.HonkaiStarRailOS;
 
 import java.io.File;
 import java.util.List;
+import java.util.function.Predicate;
 
 public interface HoyoverseGame {
 
@@ -50,6 +56,8 @@ public interface HoyoverseGame {
         throw new IllegalStateException("Could not detect to which game the provided path belongs");
     }
 
+    Game getGameType();
+
     String getName();
 
     String getShortName();
@@ -60,6 +68,6 @@ public interface HoyoverseGame {
 
     File getAudioDirectory();
 
-    List<PckAudioFile> getAudioFiles();
+    List<PckAudioFile> getAudioFiles(Predicate<File> filter);
 
 }

@@ -10,6 +10,7 @@ import ovh.akio.hmu.games.abstracts.DifferentialPatchingGame;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -80,13 +81,13 @@ public class GenshinImpactGameCN extends DifferentialPatchingGame {
     }
 
     @Override
-    public List<PckAudioFile> getAudioFiles() {
+    public List<PckAudioFile> getAudioFiles(Predicate<File> filter) {
 
         if (this.gamePckAudioFiles != null) {
             return this.gamePckAudioFiles;
         }
 
-        this.gamePckAudioFiles = Utils.scanPck(this.getAudioDirectory());
+        this.gamePckAudioFiles = Utils.scanPck(this.getAudioDirectory(), filter);
         return this.gamePckAudioFiles;
     }
 

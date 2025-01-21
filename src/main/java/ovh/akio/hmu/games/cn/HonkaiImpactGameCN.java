@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,20 +80,13 @@ public class HonkaiImpactGameCN implements HoyoverseGame, Patchable {
     }
 
     @Override
-    public List<PckAudioFile> getAudioFiles() {
+    public List<PckAudioFile> getAudioFiles(Predicate<File> filter) {
 
         if (this.gamePckAudioFiles != null) {
             return this.gamePckAudioFiles;
         }
 
-        this.gamePckAudioFiles = Utils.getDirectoryContent(this.getAudioDirectory())
-                                      .stream()
-                                      .filter(File::isFile)
-                                      .filter(file -> file.getName().endsWith(".pck"))
-                                      .filter(file -> file.getName().contains("_Default"))
-                                      .map(PckAudioFile::new)
-                                      .toList();
-
+        this.gamePckAudioFiles = Utils.scanPck(this.getAudioDirectory(), filter);
         return this.gamePckAudioFiles;
     }
 
