@@ -17,10 +17,6 @@ inspiration for this.*
 
 This project was made to extract music file from Genshin Impact, but later updated to support other Hoyoverse's title.
 
-This program will only process PCK files that are known to contains mainly music, as extracting everything would also
-include voice lines and SFX. Maybe I'll add an option later to allow to extract everything, but please note that it will
-generate ***a lot*** of files (meaning a lot of disk space and time would be required).
-
 # 2. How to extract musics
 
 | Game             | Music Extraction                                                                 | Update Package Support |
@@ -48,7 +44,10 @@ directory you are in:
 3. Select the `Open PowerShell window here` (label might vary slightly depending on your Windows version)
 
 ```
+  -a, --all                 Search for all valid audio files (not just music)
   -d, --diff                Extract update package only
+  -f, --filter=<customFileFilter>
+                            Input a custom file filter as regex
   -g, --game=<gameFolder>   Installation folder of the game
   -h, --help                Show this help message and exit.
   -o, --output=<outputFolder>
@@ -59,6 +58,9 @@ directory you are in:
   -V, --version             Print version information and exit.
 ```
 
+*Note: `--all` and `--filter` cannot be used at the same time. When both are supplied, --filter will be ignored, giving
+priority to --all*
+
 **Important:** Please note that `--game` option must be the path leading to the **game**, not the launcher. Here is
 a table to better explain what I mean (using my own install path, but you'll get the idea):
 
@@ -68,7 +70,8 @@ a table to better explain what I mean (using my own install path, but you'll get
 | Honkai Star Rail | D:\Games\Star Rail             | D:\Games\Star Rail\Games                    |
 | Honkai Impact    | D:\Games\Honkai Impact 3rd glb | D:\Games\Honkai Impact 3rd glb\Games        |
 
-> You might have a different folder name with the new launcher, but the rule is you have to select the folder containing the game executable.
+> You might have a different folder name with the new launcher, but the rule is you have to select the folder containing
+> the game executable.
 
 ### Extracting all musics
 
