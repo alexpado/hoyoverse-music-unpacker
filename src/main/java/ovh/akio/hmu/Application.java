@@ -105,11 +105,18 @@ public class Application implements Callable<Integer> {
 
         if (this.allowAnyAudioFiles) {
             this.activeFileFilter = file -> true;
-        } else if (customFileFilter.isBlank()) {
+            System.out.println(
+                    "(!) `--all` flags has been provided: All audio files will be extracted, including SFX. This **will** take time and disk space."
+            );
+        } else if (this.customFileFilter.isBlank()) {
             this.activeFileFilter = game.getGameType().getDefaultFileFilter();
         } else {
-            Pattern pattern = Pattern.compile(customFileFilter);
+            Pattern pattern = Pattern.compile(this.customFileFilter);
             this.activeFileFilter = file -> pattern.asMatchPredicate().test(file.getName());
+            System.out.printf(
+                    "(!) Audio files will be filtered using the user-provided filter: %s. Depending on the amount of files it matches, and the type of audio files, the extraction might take a while.%n",
+                    this.customFileFilter
+            );
         }
 
         if (this.diffMode) {
