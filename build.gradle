@@ -39,3 +39,20 @@ dependencyUpdates {
         isNonStable(it.candidate.version) && !isNonStable(it.currentVersion)
     }
 }
+
+tasks.register('bundle', Zip) {
+    group = 'build'
+    description = 'Deploy all files required to execute this program into a single archive'
+
+    dependsOn build
+
+    var name = project.name + '-' + version.toString()
+    archiveFileName = name + '.zip'
+
+    from('./build/libs/' + name + '.jar') {
+        into ''
+    }
+    from('wrappers') {
+        into 'wrappers'
+    }
+}
