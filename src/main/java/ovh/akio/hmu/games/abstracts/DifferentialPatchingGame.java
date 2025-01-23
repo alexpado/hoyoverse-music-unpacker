@@ -16,6 +16,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.logging.Filter;
 
 public abstract class DifferentialPatchingGame implements HoyoverseGame, Patchable {
 
@@ -32,15 +34,18 @@ public abstract class DifferentialPatchingGame implements HoyoverseGame, Patchab
 
     /**
      * Patch all files using {@link #getUpdateFiles()}.
+     *
+     * @param filter
+     *         The {@link Predicate} to use when filtering files to patch.
      */
     @Override
-    public void patch() throws IOException, InterruptedException {
+    public void patch(Predicate<File> filter) throws IOException, InterruptedException {
         // Patching needed, hdiff files
         Map<PckAudioFile, File> filePatchMap = new HashMap<>();
 
         for (File hdiffFile : this.getUpdateFiles()) {
             String hdiffName = hdiffFile.getName().replaceAll(".pck.hdiff", "");
-            for (PckAudioFile gamePckAudioFile : this.getAudioFiles()) {
+            for (PckAudioFile gamePckAudioFile : this.getAudioFiles(filter)) {
                 if (gamePckAudioFile.getName().equals(hdiffName)) {
                     filePatchMap.put(gamePckAudioFile, hdiffFile);
                 }

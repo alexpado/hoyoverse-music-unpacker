@@ -159,7 +159,7 @@ public class Application implements Callable<Integer> {
         unpacker.unpackFiles(AudioSource.GAME, this.activeFileFilter);
 
         patchable.extractUpdatePackage();
-        patchable.patch();
+        patchable.patch(this.activeFileFilter);
 
         unpacker.unpackFiles(AudioSource.PATCHED, this.activeFileFilter);
         unpacker.convertFiles(AudioSource.PATCHED, this.activeFileFilter);

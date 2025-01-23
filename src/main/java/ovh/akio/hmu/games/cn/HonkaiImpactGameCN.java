@@ -7,6 +7,7 @@ import net.sf.sevenzipjbinding.simple.ISimpleInArchiveItem;
 import ovh.akio.hmu.DiskUtils;
 import ovh.akio.hmu.Utils;
 import ovh.akio.hmu.entities.PckAudioFile;
+import ovh.akio.hmu.enums.Game;
 import ovh.akio.hmu.exceptions.InvalidGameDirectoryException;
 import ovh.akio.hmu.interfaces.HoyoverseGame;
 import ovh.akio.hmu.interfaces.states.Patchable;
@@ -47,6 +48,12 @@ public class HonkaiImpactGameCN implements HoyoverseGame, Patchable {
                                           return matcher.matches();
                                       })
                                       .findFirst().orElse(null);
+    }
+
+    @Override
+    public Game getGameType() {
+
+        return Game.HI3;
     }
 
     @Override
@@ -92,15 +99,17 @@ public class HonkaiImpactGameCN implements HoyoverseGame, Patchable {
 
     /**
      * Patch all files using {@link #getUpdateFiles()}.
+     *
+     * @param filter
+     *         The {@link Predicate} to use when filtering files to patch.
      */
     @Override
-    public void patch() {
-
+    public void patch(Predicate<File> filter) {
         // No patching needed, no hdiff files for HI3
         this.patchedPckAudioFiles = this.updatePackageFiles.stream()
                                                            .filter(File::isFile)
                                                            .filter(file -> file.getName().endsWith(".pck"))
-                                                           .filter(file -> file.getName().contains("_Default"))
+                                                           .filter(filter)
                                                            .map(PckAudioFile::new)
                                                            .toList();
     }

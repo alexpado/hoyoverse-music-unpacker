@@ -4,6 +4,7 @@ import net.sf.sevenzipjbinding.SevenZipException;
 import net.sf.sevenzipjbinding.simple.ISimpleInArchiveItem;
 import ovh.akio.hmu.Utils;
 import ovh.akio.hmu.entities.PckAudioFile;
+import ovh.akio.hmu.enums.Game;
 import ovh.akio.hmu.exceptions.InvalidGameDirectoryException;
 import ovh.akio.hmu.games.abstracts.DifferentialPatchingGame;
 
@@ -39,6 +40,12 @@ public class HonkaiStarRailCN extends DifferentialPatchingGame {
                                           return matcher.matches();
                                       })
                                       .findFirst().orElse(null);
+    }
+
+    @Override
+    public Game getGameType() {
+
+        return Game.HSR;
     }
 
     @Override
