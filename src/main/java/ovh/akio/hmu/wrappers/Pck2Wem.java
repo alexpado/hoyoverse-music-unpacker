@@ -1,7 +1,6 @@
 package ovh.akio.hmu.wrappers;
 
 import ovh.akio.hmu.entities.PckAudioFile;
-import ovh.akio.hmu.exceptions.ExternalProgramException;
 import ovh.akio.hmu.exceptions.WrapperExecutableNotFound;
 import ovh.akio.hmu.interfaces.AudioConverter;
 
@@ -41,4 +40,5 @@ public class Pck2Wem implements AudioConverter<PckAudioFile> {
 
         return output;
     }
+
 }

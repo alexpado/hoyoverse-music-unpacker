@@ -1,6 +1,7 @@
 package ovh.akio.hmu.entities;
 
-import ovh.akio.hmu.Utils;
+import ovh.akio.hmu.AppUtils;
+import ovh.akio.hmu.enums.ListingOption;
 import ovh.akio.hmu.interfaces.AudioConverter;
 import ovh.akio.hmu.interfaces.AudioFile;
 
@@ -53,7 +54,7 @@ public class PckAudioFile implements AudioFile {
     @Override
     public void onHandled(File output) {
 
-        List<File> unpackedFiles = Utils.getDirectoryContent(output, File::isFile);
+        List<File> unpackedFiles = AppUtils.getDirectoryContents(output, ListingOption.FILES_ONLY);
         unpackedFiles.stream().map(WemAudioFile::new).forEach(this.outputFiles::add);
     }
 
@@ -69,4 +70,5 @@ public class PckAudioFile implements AudioFile {
 
         return this.outputFiles.stream();
     }
+
 }

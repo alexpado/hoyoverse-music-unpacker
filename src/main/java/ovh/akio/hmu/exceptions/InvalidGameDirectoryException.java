@@ -6,4 +6,5 @@ public class InvalidGameDirectoryException extends RuntimeException {
 
         super(message);
     }
+
 }
