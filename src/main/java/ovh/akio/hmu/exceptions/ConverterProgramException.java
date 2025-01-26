@@ -2,7 +2,7 @@ package ovh.akio.hmu.exceptions;
 
 import ovh.akio.hmu.interfaces.AudioFile;
 
-public class ConverterProgramException extends ExternalProgramException{
+public class ConverterProgramException extends ExternalProgramException {
 
     private final AudioFile audioFile;
 
@@ -16,4 +16,5 @@ public class ConverterProgramException extends ExternalProgramException{
 
         return this.audioFile;
     }
+
 }

@@ -7,8 +7,8 @@ public class WrapperExecutableNotFound extends RuntimeException {
     private final File file;
 
     /**
-     * Constructs a new runtime exception with {@code null} as its detail message.  The cause is not initialized, and
-     * may subsequently be initialized by a call to {@link #initCause}.
+     * Constructs a new runtime exception with {@code null} as its detail message.  The cause is not initialized, and may
+     * subsequently be initialized by a call to {@link #initCause}.
      */
     public WrapperExecutableNotFound(File file) {
 
@@ -20,4 +20,5 @@ public class WrapperExecutableNotFound extends RuntimeException {
 
         return this.file;
     }
+
 }

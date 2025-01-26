@@ -1,9 +1,8 @@
 package ovh.akio.hmu.wrappers;
 
-import ovh.akio.hmu.Utils;
+import ovh.akio.hmu.AppUtils;
 import ovh.akio.hmu.entities.WemAudioFile;
 import ovh.akio.hmu.exceptions.ConverterProgramException;
-import ovh.akio.hmu.exceptions.ExternalProgramException;
 import ovh.akio.hmu.exceptions.WrapperExecutableNotFound;
 import ovh.akio.hmu.interfaces.AudioConverter;
 
@@ -29,7 +28,7 @@ public class Wem2Wav implements AudioConverter<WemAudioFile> {
         File   category   = input.getSource().getParentFile();
         String outputName = String.format("%s.wav", input.getName());
 
-        File categoryOutput = Utils.asLocalDirectory(outputDirectory, category.getName());
+        File categoryOutput = AppUtils.walkDirectory(outputDirectory, category.getName());
         File output         = new File(categoryOutput, outputName);
 
         String program    = this.executable.getAbsolutePath();
@@ -42,11 +41,12 @@ public class Wem2Wav implements AudioConverter<WemAudioFile> {
 
         if (process.exitValue() > 0) {
             String processOutput = new String(process.getInputStream().readAllBytes());
-            String processError = new String(process.getErrorStream().readAllBytes());
+            String processError  = new String(process.getErrorStream().readAllBytes());
 
             throw new ConverterProgramException(process.exitValue(), processOutput, processError, input);
         }
 
         return output;
     }
+
 }

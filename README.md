@@ -19,11 +19,12 @@ This project was made to extract music file from Genshin Impact, but later updat
 
 # 2. How to extract musics
 
-| Game             | Music Extraction                                                                 | Update Package Support |
-|------------------|----------------------------------------------------------------------------------|------------------------|
-| Genshin Impact   | ✅ Supported                                                                      | ❓ Not Supported        |
-| Honkai Star Rail | ✅ Supported                                                                      | ❓ Not Supported        |
-| Honkai Impact    | [Partial Support](https://github.com/alexpado/hoyoverse-music-unpacker/issues/2) | ❓ Not Supported        |
+| Game              | File Extraction | Update Package Support |
+|-------------------|-----------------|------------------------|
+| Genshin Impact    | ✅ Supported     | Support Removed        |
+| Honkai Star Rail  | ✅ Supported     | Support Removed        |
+| Honkai Impact     | ✅ Supported     | Support Removed        |
+| Zenless Zone Zero | ✅ Supported     | Not Supported          |
 
 *More about update package support [here](#3-about-update-packages)*
 
@@ -45,21 +46,20 @@ directory you are in:
 
 ```
   -a, --all                 Search for all valid audio files (not just music)
-  -d, --diff                Extract update package only
   -f, --filter=<customFileFilter>
                             Input a custom file filter as regex
   -g, --game=<gameFolder>   Installation folder of the game
   -h, --help                Show this help message and exit.
   -o, --output=<outputFolder>
                             Output folder for the extracted files
-  -p, --prefix              (With --diff) Add status prefix to files
   -t, --threads=<threadCount>
                             Number of parallel thread that can be used.
   -V, --version             Print version information and exit.
 ```
 
 *Note: `--all` and `--filter` cannot be used at the same time. When both are supplied, --filter will be ignored, giving
-priority to --all*
+priority to --all. Default file filters are provided on best effort basis, but some games might have some music files in unknown
+files or mix SFX and Musics in a single source file.*
 
 **Important:** Please note that `--game` option must be the path leading to the **game**, not the launcher. Here is
 a table to better explain what I mean (using my own install path, but you'll get the idea):
@@ -94,53 +94,10 @@ This will extract all music in `D:\Documents\Musics`.
 # 3. About update packages
 
 > [!IMPORTANT]
-> Since Hoyoverse started changing the way the pre-download package work, you might not be able to use this. The reason
-> being that they're not releasing it for everyone at the same time. Using the program in diff mode will not work and
-> warn you that it could not find any update package.
+> Since HMU version 1.5, support for update package has been dropped.
 >
-> I'm working on a way to make it compatible, but it might take some time. If you have an idea about it, do not hesitate
-> to open a discussion.
-
-When a game is going to be updated in the next few days, Hoyoverse allows player to download the update package before
-the actual release. This package contains the whole update and can be used to retrieve the music before the game is
-updated.
-
-This is working by doing the same job as the launcher when applying the update. **This won't be done on your game
-files !** When patching, it does not modify the original file, but creates a new one, avoiding breaking your game.
-
-### Steps for extracting the update package (skip if you don't care)
-
-1. Unpack PCK files to workspace (PCK -> WEM)
-2. Unzip update zip package to workspace
-3. Patch PCK files using update package (skipped for Honkai Impact which is not using HDIFF files)
-4. Unpack patched PCK files (PCK -> WEM)
-5. Convert WEM to WAV
-6. Index files from step 2 and 6
-7. Compare files and rename if --prefix
-
-If you want to extract music from the update package (once the download through the launcher is finished), you have to
-use the `--diff` flag:
-
-```bash
-java -jar hoyoverse-music-unpacker.jar --game="D:\Games\Genshin Impact" --diff
-```
-
-This will leave a lot of file, both created and updated... If you want to know which one has been
-created/updated, add the `--prefix` flag:
-
-```bash
-java -jar hoyoverse-music-unpacker.jar --game="D:\Games\Genshin Impact" --diff --prefix
-```
-
-Every file will now have a prefix:
-
-- **[-]**: The file did not change compared to the current version
-- **[C]**: The file has been created with this update.
-- **[U]**: The file has been updated with this update.
-    - *The file being updated might mean two things: Either it is an old song that has been updated/renamed, or it's a
-      new song using an old filename.*
-- **[D]**: The file has never been seen, but is very similar to an already existing one within the game.
-    - *This happens way more often than you think...*
+> Hoyoverse changed drastically their way of handling pre-download which made this program incompatible, and I don't
+> have the time nor the motivation to search for a solution. You are welcome to try and open a pull request though.
 
 # 4. Contributing
 

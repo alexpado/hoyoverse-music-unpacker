@@ -1,22 +1,15 @@
 package ovh.akio.hmu.entities;
 
-import ovh.akio.hmu.Utils;
-import ovh.akio.hmu.enums.AudioState;
 import ovh.akio.hmu.interfaces.AudioConverter;
 import ovh.akio.hmu.interfaces.AudioFile;
 
 import java.io.File;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 
 public class WemAudioFile implements AudioFile {
 
     private final File   source;
     private final String filename;
     private       File   output;
-
-    private String     hash;
-    private AudioState state;
 
     public WemAudioFile(File source) {
 
@@ -68,23 +61,4 @@ public class WemAudioFile implements AudioFile {
         return this.output;
     }
 
-    public void processHash() throws IOException, NoSuchAlgorithmException {
-
-        this.hash = Utils.hashFile(this.source);
-    }
-
-    public void setState(AudioState state) {
-
-        this.state = state;
-    }
-
-    public String getHash() {
-
-        return this.hash;
-    }
-
-    public AudioState getState() {
-
-        return this.state;
-    }
 }

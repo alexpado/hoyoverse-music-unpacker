@@ -3,22 +3,24 @@ package ovh.akio.hmu;
 import me.tongfei.progressbar.ProgressBar;
 import ovh.akio.hmu.entities.PckAudioFile;
 import ovh.akio.hmu.entities.WemAudioFile;
-import ovh.akio.hmu.enums.AudioSource;
-import ovh.akio.hmu.enums.AudioState;
+import ovh.akio.hmu.exceptions.ConverterProgramException;
+import ovh.akio.hmu.interfaces.AudioConverter;
+import ovh.akio.hmu.interfaces.AudioFile;
 import ovh.akio.hmu.interfaces.HoyoverseGame;
-import ovh.akio.hmu.interfaces.states.Patchable;
+import ovh.akio.hmu.wrappers.Pck2Wem;
+import ovh.akio.hmu.wrappers.Wem2Wav;
 import picocli.CommandLine;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
+import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 @CommandLine.Command(
         name = "extract",
@@ -27,10 +29,8 @@ import java.util.stream.Stream;
 )
 public class Application implements Callable<Integer> {
 
-    private static final int CODE_OK                   = 0;
-    private static final int CODE_DIFF_MODE_IMPOSSIBLE = 1;
-    private static final int CODE_NO_UPDATE            = 2;
-
+    private static final int CODE_OK        = 0;
+    private static final int CODE_FAILURE   = 3;
 
     @CommandLine.Option(
             names = {"-a", "--all"},
@@ -61,27 +61,12 @@ public class Application implements Callable<Integer> {
     private File outputFolder;
 
     @CommandLine.Option(
-            names = {"-d", "--diff"},
-            description = "Extract update package only",
-            defaultValue = "false"
-    )
-    private boolean diffMode;
-
-    @CommandLine.Option(
-            names = {"-p", "--prefix"},
-            description = "(With --diff) Add status prefix to files",
-            defaultValue = "false"
-    )
-    private boolean prefixEnabled;
-
-    @CommandLine.Option(
             names = {"-t", "--threads"},
             description = "Number of parallel thread that can be used.",
             defaultValue = "4"
     )
-    private int threadCount;
-
-    private Predicate<File> activeFileFilter;
+    private int             threadCount;
+    private ExecutorService service;
 
     public static void main(String... args) {
 
@@ -92,174 +77,95 @@ public class Application implements Callable<Integer> {
      * Computes a result, or throws an exception if unable to do so.
      *
      * @return computed result
-     *
-     * @throws Exception
-     *         if unable to compute a result
      */
     @Override
-    public Integer call() throws Exception {
+    public Integer call() {
 
-        System.out.println("Detecting game...");
-        HoyoverseGame game = HoyoverseGame.of(this.gameFolder);
-        System.out.println("  -- Detected " + game.getName() + " !");
+        this.service = Executors.newFixedThreadPool(Math.max(this.threadCount, 1));
 
+        Logger.info("Detecting game...");
+        HoyoverseGame game;
+
+        try {
+            game = HoyoverseGame.of(this.gameFolder);
+        } catch (Exception e) {
+            Logger.error("Could not detect which game the path belongs.");
+            Logger.warn(" -> Please double check that the path you entered is not the launcher.");
+            Logger.info(" -> https://github.com/alexpado/hoyoverse-music-unpacker/blob/master/README.md");
+            return CODE_FAILURE;
+        }
+
+        Logger.info("Detected %s game.", game.getName());
+
+        Predicate<File> activeFileFilter;
         if (this.allowAnyAudioFiles) {
-            this.activeFileFilter = file -> true;
-            System.out.println(
-                    "(!) `--all` flags has been provided: All audio files will be extracted, including SFX. This **will** take time and disk space."
-            );
+            activeFileFilter = file -> true;
+            Logger.warn("The '--all' flag has been specified.");
+            Logger.warn(" -> All audio files will be extracted, including SFX and Voice overs files.");
+            Logger.warn(" -> This **will** take time and disk space.");
         } else if (this.customFileFilter.isBlank()) {
-            this.activeFileFilter = game.getGameType().getDefaultFileFilter();
+            activeFileFilter = game.getGameType().getDefaultFileFilter();
         } else {
             Pattern pattern = Pattern.compile(this.customFileFilter);
-            this.activeFileFilter = file -> pattern.asMatchPredicate().test(file.getName());
-            System.out.printf(
-                    "(!) Audio files will be filtered using the user-provided filter: %s. Depending on the amount of files it matches, and the type of audio files, the extraction might take a while.%n",
-                    this.customFileFilter
-            );
+            activeFileFilter = file -> pattern.asMatchPredicate().test(file.getName());
+            Logger.warn("The '--filter' flag has been specified.");
+            Logger.warn(" -> Audio files will be filtered using the user-provided filter: %s", this.customFileFilter);
+            Logger.warn(" -> Depending on the amount of files it matches, the extraction might take a while.");
         }
 
-        if (this.diffMode) {
-            return this.differentialExtract(game, this.prefixEnabled);
-        } else {
-            return this.regularExtract(game);
-        }
-    }
-
-    private int regularExtract(HoyoverseGame game) {
-
-        GameUnpacker unpacker = new GameUnpacker(game, this.threadCount, this.outputFolder);
-
-        if (game instanceof Patchable patchable && patchable.getUpdatePackageFile().isPresent()) {
-            System.out.println("An update package has been detected. Use --diff to extract the update package.");
+        if (this.outputFolder.getName().isEmpty()) {
+            this.outputFolder = new File("extracted");
         }
 
-        // Cleaning up the previous runs
-        System.out.println("Removing previous files...");
-        Utils.delete(DiskUtils.workspace(game).toFile());
+        Logger.info("Extracted files will be saved to %s", this.outputFolder.getAbsolutePath());
 
-        System.out.println("Starting unpacking...");
-        unpacker.unpackFiles(AudioSource.GAME, this.activeFileFilter);
-        unpacker.convertFiles(AudioSource.GAME, this.activeFileFilter);
+        Path unpackPath    = AppUtils.Paths.unpack(game);
+        Path extractedPath = AppUtils.Paths.extracted(game, this.outputFolder);
+        File unpackFile    = unpackPath.toFile();
 
+        if (unpackFile.exists()) {
+            Logger.info("Cleaning up old workspace...");
+            AppUtils.deleteRecursively(unpackFile);
+        }
+
+        List<PckAudioFile> audioFiles = game.getAudioFiles(activeFileFilter);
+        this.run("Unpacking", unpackPath, new Pck2Wem(), audioFiles);
+        List<WemAudioFile> wemAudioFiles = audioFiles.stream().flatMap(PckAudioFile::getOutputFiles).toList();
+        this.run("Extracting", extractedPath, new Wem2Wav(), wemAudioFiles);
+
+        Logger.info("Cleaning up...");
+        AppUtils.deleteRecursively(unpackFile);
         return CODE_OK;
     }
 
-    private int differentialExtract(HoyoverseGame game, boolean flagFiles) throws IOException, InterruptedException {
+    private <T extends AudioFile> void run(CharSequence name, Path output, AudioConverter<T> converter, Collection<T> files) {
 
-        GameUnpacker unpacker = new GameUnpacker(game, this.threadCount, this.outputFolder);
+        try (ProgressBar pb = AppUtils.createDefaultProgressBar(name, files.size())) {
+            CompletableFuture<?>[] futures = files
+                    .stream()
+                    .map(audio -> (Runnable) () -> {
+                        try {
+                            File out = converter.handle(audio, output.toFile());
+                            audio.onHandled(out);
+                            pb.step();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }).map(runnable -> CompletableFuture.runAsync(runnable, this.service))
+                    .toArray(CompletableFuture[]::new);
 
-        if (!(game instanceof Patchable patchable)) {
-            System.out.println("This game is not compatible with --diff flag.");
-            return CODE_DIFF_MODE_IMPOSSIBLE;
-        }
-
-        if (patchable.getUpdatePackageFile().isEmpty()) {
-            System.out.println("No update package found.");
-            return CODE_NO_UPDATE;
-        }
-
-        // Cleaning up the previous runs
-        System.out.println("Removing previous files...");
-        Utils.delete(DiskUtils.workspace(game).toFile());
-
-        unpacker.unpackFiles(AudioSource.GAME, this.activeFileFilter);
-
-        patchable.extractUpdatePackage();
-        patchable.patch(this.activeFileFilter);
-
-        unpacker.unpackFiles(AudioSource.PATCHED, this.activeFileFilter);
-        unpacker.convertFiles(AudioSource.PATCHED, this.activeFileFilter);
-
-        if (!flagFiles) {
-            return CODE_OK;
-        }
-
-        // Process WEM hashes
-        List<WemAudioFile> patchedWem = patchable.getPatchedFiles()
-                                                 .stream()
-                                                 .flatMap(PckAudioFile::getOutputFiles)
-                                                 .toList();
-
-        List<WemAudioFile> originalWem = game.getAudioFiles(this.activeFileFilter)
-                                             .stream()
-                                             .flatMap(PckAudioFile::getOutputFiles)
-                                             .toList();
-
-        Map<WemAudioFile, WemAudioFile> audioFileMapping = new HashMap<>();
-
-        try (ProgressBar pb = Utils.defaultProgressBar("       Mapping", patchedWem.size())) {
-            for (WemAudioFile wemAudioFile : patchedWem) {
-
-                Optional<WemAudioFile> optionalAudio = originalWem.stream()
-                                                                  .filter(audioFile -> audioFile.getName()
-                                                                                                .equals(wemAudioFile.getName()))
-                                                                  .findFirst();
-
-                optionalAudio.ifPresent(file -> audioFileMapping.put(wemAudioFile, file));
-                pb.step();
-            }
-        }
-
-
-        int total = originalWem.size() + patchedWem.size();
-
-        try (ProgressBar pb = Utils.defaultProgressBar("      Indexing", total)) {
-
-            Stream.concat(originalWem.stream(), patchedWem.stream()).forEach(audioFile -> {
-                try {
-                    audioFile.processHash();
-                    pb.step();
-                } catch (Exception e) {
-                    System.err.println("Failed to process hash for file " + audioFile.getName());
-                    throw new RuntimeException(e);
+            CompletableFuture.allOf(futures).exceptionally(e -> {
+                if (e.getCause() instanceof ConverterProgramException ex) {
+                    Logger.error("Audio %s could not be extracted.");
+                    Logger.error(" -> File: %s", ex.getAudioFile().getName());
+                    Logger.error(" -> Code: %s", ex.getCode());
+                    Logger.error(" -> Error: %s", ex.getError());
+                    Logger.error(" -> Message: %s", ex.getMessage());
                 }
-            });
+                return null;
+            }).join();
+            pb.setExtraMessage("OK");
         }
-
-        try (ProgressBar pb = Utils.defaultProgressBar("     Comparing", patchedWem.size())) {
-            for (WemAudioFile wemAudioFile : patchedWem) {
-                if (audioFileMapping.containsKey(wemAudioFile)) {
-                    WemAudioFile other = audioFileMapping.get(wemAudioFile);
-                    if (wemAudioFile.getHash().equals(other.getName())) {
-                        wemAudioFile.setState(AudioState.UNCHANGED);
-                    } else {
-                        wemAudioFile.setState(AudioState.UPDATED);
-                    }
-                } else {
-                    if (originalWem.stream().anyMatch(file -> file.getHash().equals(wemAudioFile.getHash()))) {
-                        wemAudioFile.setState(AudioState.DUPLICATED);
-                    } else {
-                        wemAudioFile.setState(AudioState.CREATED);
-                    }
-                }
-
-                pb.step();
-            }
-        }
-
-        try (ProgressBar pb = Utils.defaultProgressBar("      Renaming", patchedWem.size())) {
-            for (WemAudioFile wemAudioFile : patchedWem) {
-
-                File output = wemAudioFile.getOutput();
-
-                if (output != null) {
-
-                    File newFile = new File(
-                            output.getParent(),
-                            String.format("[%s] %s.wav", wemAudioFile.getState().getFlag(), wemAudioFile.getName())
-                    );
-
-                    if (output.renameTo(newFile)) {
-                        wemAudioFile.onHandled(newFile);
-                    }
-                }
-
-                pb.step();
-            }
-        }
-
-        return CODE_OK;
     }
 
 }
