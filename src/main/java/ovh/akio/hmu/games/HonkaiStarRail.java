@@ -1,14 +1,13 @@
-package ovh.akio.hmu.games.cn;
+package ovh.akio.hmu.games;
 
 import ovh.akio.hmu.enums.Game;
-import ovh.akio.hmu.games.AbstractGame;
 
 import java.io.File;
 
-public class HonkaiStarRailCN extends AbstractGame {
+public class HonkaiStarRail extends AbstractGame {
 
 
-    public HonkaiStarRailCN(File basePath) {
+    public HonkaiStarRail(File basePath) {
 
         super(basePath);
     }
@@ -22,7 +21,7 @@ public class HonkaiStarRailCN extends AbstractGame {
     @Override
     public String getName() {
 
-        return "Honkai Star Rail (CN)";
+        return "Honkai Star Rail";
     }
 
     @Override

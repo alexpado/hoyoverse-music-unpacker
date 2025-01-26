@@ -1,13 +1,12 @@
-package ovh.akio.hmu.games.cn;
+package ovh.akio.hmu.games;
 
 import ovh.akio.hmu.enums.Game;
-import ovh.akio.hmu.games.AbstractGame;
 
 import java.io.File;
 
-public class HonkaiImpactGameCN extends AbstractGame {
+public class HonkaiImpactGame extends AbstractGame {
 
-    public HonkaiImpactGameCN(File basePath) {
+    public HonkaiImpactGame(File basePath) {
 
         super(basePath);
     }
