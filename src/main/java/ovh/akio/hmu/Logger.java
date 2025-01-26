@@ -17,7 +17,7 @@ public final class Logger {
 
     public static void info(String message, Object... args) {
 
-        System.out.printf("[%s] [?] %s%n", now(), String.format(message, args));
+        System.out.printf("[%s] [i] %s%n", now(), String.format(message, args));
     }
 
     public static void warn(String message, Object... args) {
