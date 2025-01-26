@@ -3,6 +3,7 @@ package ovh.akio.hmu.interfaces;
 import ovh.akio.hmu.entities.PckAudioFile;
 import ovh.akio.hmu.enums.Game;
 import ovh.akio.hmu.exceptions.InvalidGameDirectoryException;
+import ovh.akio.hmu.games.ZenlessZoneZeroGame;
 import ovh.akio.hmu.games.cn.GenshinImpactGameCN;
 import ovh.akio.hmu.games.HonkaiImpactGame;
 import ovh.akio.hmu.games.HonkaiStarRail;
@@ -31,12 +32,15 @@ public interface HoyoverseGame {
         } catch (InvalidGameDirectoryException ignore) {
         }
 
-
         try {
             return new HonkaiImpactGame(path);
         } catch (InvalidGameDirectoryException ignore) {
         }
 
+        try {
+            return new ZenlessZoneZeroGame(path);
+        } catch (InvalidGameDirectoryException ignore) {
+        }
 
         throw new IllegalStateException("Could not detect to which game the provided path belongs");
     }

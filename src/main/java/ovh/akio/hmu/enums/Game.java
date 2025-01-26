@@ -7,7 +7,8 @@ public enum Game {
 
     HSR(file -> file.getName().contains("Minimum") || file.getName().contains("Music")),
     GI(file -> file.getName().contains("Minimum") || file.getName().contains("Music")),
-    HI3(file -> file.getName().contains("BGM"));
+    HI3(file -> file.getName().contains("BGM")),
+    ZZZ(file -> file.getName().contains("Streamed_SFX_"));
 
     private final Predicate<File> defaultFileFilter;
 

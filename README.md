@@ -19,11 +19,12 @@ This project was made to extract music file from Genshin Impact, but later updat
 
 # 2. How to extract musics
 
-| Game             | File Extraction | Update Package Support |
-|------------------|-----------------|------------------------|
-| Genshin Impact   | ✅ Supported     | Support Removed        |
-| Honkai Star Rail | ✅ Supported     | Support Removed        |
-| Honkai Impact    | ✅ Supported     | Support Removed        |
+| Game              | File Extraction | Update Package Support |
+|-------------------|-----------------|------------------------|
+| Genshin Impact    | ✅ Supported     | Support Removed        |
+| Honkai Star Rail  | ✅ Supported     | Support Removed        |
+| Honkai Impact     | ✅ Supported     | Support Removed        |
+| Zenless Zone Zero | ✅ Supported     | Not Supported          |
 
 *More about update package support [here](#3-about-update-packages)*
 
@@ -57,7 +58,8 @@ directory you are in:
 ```
 
 *Note: `--all` and `--filter` cannot be used at the same time. When both are supplied, --filter will be ignored, giving
-priority to --all*
+priority to --all. Default file filters are provided on best effort basis, but some games might have some music files in unknown
+files or mix SFX and Musics in a single source file.*
 
 **Important:** Please note that `--game` option must be the path leading to the **game**, not the launcher. Here is
 a table to better explain what I mean (using my own install path, but you'll get the idea):
@@ -93,8 +95,8 @@ This will extract all music in `D:\Documents\Musics`.
 
 > [!IMPORTANT]
 > Since HMU version 1.5, support for update package has been dropped.
-> 
-> Hoyoverse changed drastically their way of handling pre-download which made this program incompatible, and I don't 
+>
+> Hoyoverse changed drastically their way of handling pre-download which made this program incompatible, and I don't
 > have the time nor the motivation to search for a solution. You are welcome to try and open a pull request though.
 
 # 4. Contributing
